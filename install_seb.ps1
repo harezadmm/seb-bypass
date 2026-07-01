@@ -11,6 +11,10 @@ if (Test-Path $tempFolder) { Remove-Item $tempFolder -Recurse -Force }
 Expand-Archive -Path $zip -DestinationPath $tempFolder -Force
 
 Write-Host "[3/3] Installing files directly to SafeExamBrowser..." -ForegroundColor Green
+Write-Host "Terminating any running Safe Exam Browser processes to unlock files..." -ForegroundColor Yellow
+Stop-Process -Name "SafeExamBrowser" -Force -ErrorAction SilentlyContinue
+Stop-Process -Name "SafeExamBrowser.Client" -Force -ErrorAction SilentlyContinue
+Start-Sleep -Seconds 1
 Copy-Item "$tempFolder\SafeExamBrowser.exe"                       "$dest\" -Force
 Copy-Item "$tempFolder\SafeExamBrowser.Client.exe"                "$dest\" -Force
 Copy-Item "$tempFolder\SafeExamBrowser.Configuration.dll"         "$dest\" -Force
@@ -48,14 +52,14 @@ if ($confirmSch -imatch '^y$') {
     
     if ($schType -eq '1') {
         $daysVal = Read-Host "Dijalankan setiap berapa hari sekali? (contoh: 1 untuk tiap hari)"
-        $trigger = New-ScheduledTaskTrigger -Daily -At '12:00PM' -DaysInterval [int]$daysVal
+        $trigger = New-ScheduledTaskTrigger -Daily -At '12:00PM' -DaysInterval ([int]$daysVal)
         Register-ScheduledTask -TaskName 'SEB_AutoCleanup_Config' -Action $action -Trigger $trigger -RunLevel Highest -Force
         Write-Host "Penjadwalan harian berhasil dibuat!" -ForegroundColor Green
     }
     elseif ($schType -eq '2') {
         $weeksVal = Read-Host "Dijalankan setiap berapa minggu sekali? (contoh: 1 untuk tiap minggu)"
         $currentDay = (Get-Date).DayOfWeek
-        $trigger = New-ScheduledTaskTrigger -Weekly -At '12:00PM' -DaysOfWeek $currentDay -WeeksInterval [int]$weeksVal
+        $trigger = New-ScheduledTaskTrigger -Weekly -At '12:00PM' -DaysOfWeek $currentDay -WeeksInterval ([int]$weeksVal)
         Register-ScheduledTask -TaskName 'SEB_AutoCleanup_Config' -Action $action -Trigger $trigger -RunLevel Highest -Force
         Write-Host "Penjadwalan mingguan berhasil dibuat!" -ForegroundColor Green
     }
