@@ -9,11 +9,12 @@ if (-not $isAdmin) {
     return
 }
 
-# Verifikasi Password
+# Verifikasi Password (Hidden Input)
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host "                  VERIFIKASI INSTALASI                    " -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
-$inputPassword = Read-Host -Prompt "Masukkan Kode Aktivasi/Password untuk melanjutkan"
+$securePassword = Read-Host -Prompt "Masukkan Kode Aktivasi/Password untuk melanjutkan" -AsSecureString
+$inputPassword = [System.Net.NetworkCredential]::new("", $securePassword).Password
 if ($inputPassword -ne "0821") {
     Write-Host ""
     Write-Host "==========================================================" -ForegroundColor Red
