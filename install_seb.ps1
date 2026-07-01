@@ -47,4 +47,13 @@ Write-Host ""
 Write-Host "=============================================" -ForegroundColor Green
 Write-Host " SUKSES! Patch SEB 3.10.1 berhasil terpasang!" -ForegroundColor Green
 Write-Host "=============================================" -ForegroundColor Green
+Write-Host ""
+Write-Host "Fitur & Perbaikan pada Patch ini:" -ForegroundColor Cyan
+Write-Host "  [+] Bypass Deteksi VM (Virtual Machine)" -ForegroundColor Gray
+Write-Host "  [+] Tampilan Fullscreen Normal (Tanpa/Cegah Minimize)" -ForegroundColor Gray
+Write-Host "  [+] Screenshot/PrintScreen Diizinkan" -ForegroundColor Gray
+Write-Host "  [+] Taskbar SEB Bagian Bawah Aktif & Muncul" -ForegroundColor Gray
+Write-Host "  [+] Tombol Navigasi Browser (Chrome Style) Aktif" -ForegroundColor Gray
+Write-Host "  [+] Tombol Power/Shutdown di Taskbar Aktif" -ForegroundColor Gray
+Write-Host ""
 
