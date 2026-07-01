@@ -11,16 +11,22 @@ if (Test-Path $tempFolder) { Remove-Item $tempFolder -Recurse -Force }
 Expand-Archive -Path $zip -DestinationPath $tempFolder -Force
 
 Write-Host "[3/3] Installing files directly to SafeExamBrowser..." -ForegroundColor Green
+Write-Host "Stopping Safe Exam Browser Service..." -ForegroundColor Yellow
+Stop-Service -Name "SafeExamBrowser" -Force -ErrorAction SilentlyContinue
 Write-Host "Terminating any running Safe Exam Browser processes to unlock files..." -ForegroundColor Yellow
 Stop-Process -Name "SafeExamBrowser" -Force -ErrorAction SilentlyContinue
 Stop-Process -Name "SafeExamBrowser.Client" -Force -ErrorAction SilentlyContinue
-Start-Sleep -Seconds 1
+Start-Sleep -Seconds 2
+
 Copy-Item "$tempFolder\SafeExamBrowser.exe"                       "$dest\" -Force
 Copy-Item "$tempFolder\SafeExamBrowser.Client.exe"                "$dest\" -Force
 Copy-Item "$tempFolder\SafeExamBrowser.Configuration.dll"         "$dest\" -Force
 Copy-Item "$tempFolder\SafeExamBrowser.Monitoring.dll"            "$dest\" -Force
 Copy-Item "$tempFolder\SafeExamBrowser.UserInterface.Desktop.dll" "$dest\" -Force
 Copy-Item "$tempFolder\SafeExamBrowser.UserInterface.Mobile.dll"  "$dest\" -Force
+
+Write-Host "Starting Safe Exam Browser Service..." -ForegroundColor Yellow
+Start-Service -Name "SafeExamBrowser" -ErrorAction SilentlyContinue
 
 # Clean up
 Remove-Item $zip -Force
