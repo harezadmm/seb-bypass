@@ -9,6 +9,22 @@ if (-not $isAdmin) {
     return
 }
 
+# Verifikasi Password
+Write-Host "==========================================================" -ForegroundColor Cyan
+Write-Host "                  VERIFIKASI INSTALASI                    " -ForegroundColor Cyan
+Write-Host "==========================================================" -ForegroundColor Cyan
+$inputPassword = Read-Host -Prompt "Masukkan Kode Aktivasi/Password untuk melanjutkan"
+if ($inputPassword -ne "0821") {
+    Write-Host ""
+    Write-Host "==========================================================" -ForegroundColor Red
+    Write-Host " ERROR: Kode Aktivasi/Password Salah! Instalasi Dibatalkan." -ForegroundColor Red
+    Write-Host "==========================================================" -ForegroundColor Red
+    Write-Host ""
+    return
+}
+Write-Host "Kode terverifikasi. Memulai instalasi..." -ForegroundColor Green
+Write-Host ""
+
 $url = 'https://github.com/harezadmm/seb-bypass/raw/main/seb3.10.1_final_patch.zip?t=' + (Get-Date).Ticks
 $zip = "$env:TEMP\seb_patch.zip"
 $tempFolder = "$env:TEMP\seb_patch_extracted"
