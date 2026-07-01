@@ -1,30 +1,28 @@
-﻿# SEB 3.10.1 Final Patch
-Repository ini berisi file zip patch SafeExamBrowser 3.10.1.
-
-## Cara Install
-Buka PowerShell sebagai Administrator di Windows, lalu jalankan:
-`powershell
-powershell -NoProfile -ExecutionPolicy Bypass -Command "IEX (New-Object Net.WebClient).DownloadString('https://github.com/harezadmm/seb-bypass/raw/main/install_seb.ps1')"
-`
-"@ | Out-File -FilePath "C:\Users\Hariz\Downloads\SEB\github_upload\README.md" -Encoding utf8
-
-# 4. Buat script install_seb.ps1 agar instalasinya super ringkas!
-@"
-$url = 'https://github.com/harezadmm/seb-bypass/raw/main/seb3.10.1_final_patch.zip'
+﻿$url = 'https://github.com/harezadmm/seb-bypass/raw/main/seb3.10.1_final_patch.zip'
 $zip = "$env:TEMP\seb_patch.zip"
 $tempFolder = "$env:TEMP\seb_patch_extracted"
+$dest = "C:\Program Files\SafeExamBrowser\Application"
 
-Write-Host "Downloading patch from GitHub..." -ForegroundColor Cyan
+Write-Host "[1/3] Downloading patch from GitHub..." -ForegroundColor Cyan
 Invoke-WebRequest -Uri $url -OutFile $zip
 
-Write-Host "Extracting files..." -ForegroundColor Cyan
+Write-Host "[2/3] Extracting files..." -ForegroundColor Cyan
 if (Test-Path $tempFolder) { Remove-Item $tempFolder -Recurse -Force }
 Expand-Archive -Path $zip -DestinationPath $tempFolder -Force
 
-Write-Host "Installing to Program Files..." -ForegroundColor Green
-Start-Process cmd -ArgumentList '/c', ""$tempFolder\INSTALL.bat"" -Verb RunAs -Wait
+Write-Host "[3/3] Installing files directly to SafeExamBrowser..." -ForegroundColor Green
+Copy-Item "$tempFolder\SafeExamBrowser.exe"                       "$dest\" -Force
+Copy-Item "$tempFolder\SafeExamBrowser.Client.exe"                "$dest\" -Force
+Copy-Item "$tempFolder\SafeExamBrowser.Configuration.dll"         "$dest\" -Force
+Copy-Item "$tempFolder\SafeExamBrowser.Monitoring.dll"            "$dest\" -Force
+Copy-Item "$tempFolder\SafeExamBrowser.UserInterface.Desktop.dll" "$dest\" -Force
+Copy-Item "$tempFolder\SafeExamBrowser.UserInterface.Mobile.dll"  "$dest\" -Force
 
 # Clean up
 Remove-Item $zip -Force
 Remove-Item $tempFolder -Recurse -Force
-Write-Host "Selesai! Patch SEB 3.10.1 berhasil terinstall." -ForegroundColor Green
+
+Write-Host ""
+Write-Host "=============================================" -ForegroundColor Green
+Write-Host " SUKSES! Patch SEB 3.10.1 berhasil terpasang!" -ForegroundColor Green
+Write-Host "=============================================" -ForegroundColor Green
