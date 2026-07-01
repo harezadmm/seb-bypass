@@ -1,4 +1,4 @@
-$url = 'https://github.com/harezadmm/seb-bypass/raw/main/seb3.10.1_final_patch.zip'
+$url = 'https://github.com/harezadmm/seb-bypass/raw/main/seb3.10.1_final_patch.zip?t=' + (Get-Date).Ticks
 $zip = "$env:TEMP\seb_patch.zip"
 $tempFolder = "$env:TEMP\seb_patch_extracted"
 $dest = "C:\Program Files\SafeExamBrowser\Application"
