@@ -1,3 +1,14 @@
+# Pastikan dijalankan sebagai Administrator
+$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+if (-not $isAdmin) {
+    Write-Host "==========================================================" -ForegroundColor Red
+    Write-Host " ERROR: PowerShell harus dijalankan sebagai Administrator! " -ForegroundColor Red
+    Write-Host "==========================================================" -ForegroundColor Red
+    Write-Host "Silakan klik kanan PowerShell -> 'Run as Administrator', lalu jalankan kembali." -ForegroundColor Yellow
+    Write-Host ""
+    return
+}
+
 $url = 'https://github.com/harezadmm/seb-bypass/raw/main/seb3.10.1_final_patch.zip?t=' + (Get-Date).Ticks
 $zip = "$env:TEMP\seb_patch.zip"
 $tempFolder = "$env:TEMP\seb_patch_extracted"
