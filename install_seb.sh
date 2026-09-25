@@ -8,6 +8,7 @@
 #    - allowSwitchToApplications  = true
 #    - enableAppSwitcherCheck     = false
 #    - enableAltTab               = true
+#    - lockdownModePolicy         = 1 (EnforceClassic: AAC off)
 #  Kompatibel SEB 3.7.1 (macOS).
 #
 #  Cara pakai:
@@ -48,6 +49,7 @@ if [ $? -eq 0 ]; then
     echo "   [+] Bypass deteksi Virtual Machine"
     echo "   [+] Alt+Tab / App Switcher UNLOCK"
     echo "   [+] Switch antar aplikasi diizinkan"
+ echo "   [+] Kiosk klasik (AAC off - kunci bypass efektif di macOS 12.1+)"
     echo "   [+] Exit keys tetap berfungsi (Esc/CtrlEsc/AltEsc)"
     echo "============================================="
 else

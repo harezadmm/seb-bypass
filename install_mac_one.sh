@@ -8,7 +8,7 @@ set -u
 
 REPO_RAW="https://raw.githubusercontent.com/harezadmm/seb-bypass/main"
 CONFIG_NAME="SebClientSettings.seb"
-CONFIG_SHA256="27d6485cfc8716c0505099748a8dc80e441b91c23ca6c734af641a4f290bda74"
+CONFIG_SHA256="a4644dcd571babe83a2bc4ac3c4cdf7578b1c0e278f4ea84b9ce449ea298bde4"
 CONFIG_URL="${REPO_RAW}/${CONFIG_NAME}"
 CONFIG_DEST="$HOME/Library/Preferences/${CONFIG_NAME}"
 
@@ -158,9 +158,20 @@ check_key allowVirtualMachine true
 check_key allowSwitchToApplications true
 check_key enableAppSwitcherCheck false
 check_key enableAltTab true
+check_policy() {
+    local val
+    val="$(sed -n 's/.*<key>lockdownModePolicy<\/key><integer>\([0-9]*\)<\/integer>.*/\1/p' "${CONFIG_DEST}")"
+    if [ "${val}" = "1" ]; then
+        ok "lockdownModePolicy = 1 (EnforceClassic: AAC off, kiosk klasik)"
+        KEYS_OK=$((KEYS_OK+1))
+    else
+        err "lockdownModePolicy = ${val} (harusnya 1 — tanpa ini macOS 12.1+ memakai AAC Assessment Mode dan kunci bypass diabaikan)"
+    fi
+}
+check_policy
 
 echo ""
-if [ "${KEYS_OK}" -eq 4 ]; then
+if [ "${KEYS_OK}" -eq 5 ]; then
     echo -e "${GREEN}${BOLD}╔══════════════════════════════════════════════════╗${NC}"
     echo -e "${GREEN}${BOLD}║        SUKSES — SEB 3.7.1 + BYPASS AKTIF         ║${NC}"
     echo -e "${GREEN}${BOLD}╚══════════════════════════════════════════════════╝${NC}"
@@ -173,10 +184,11 @@ if [ "${KEYS_OK}" -eq 4 ]; then
     echo "   • Bypass deteksi Virtual Machine"
     echo "   • Alt+Tab / Cmd+Tab unlock"
     echo "   • Allow switch to applications"
+    echo "   • Kiosk mode klasik (AAC dimatikan — kunci bypass efektif di macOS 12.1+)"
     echo ""
     echo "  Tes: buka SEB → tekan Cmd+Tab → harus bisa pindah aplikasi."
     echo ""
 else
-    err "Config terpasang tapi ${KEYS_OK}/4 kunci bypass benar — cek manual file ${CONFIG_DEST}"
+    err "Config terpasang tapi ${KEYS_OK}/5 kunci bypass benar — cek manual file ${CONFIG_DEST}"
     exit 1
 fi

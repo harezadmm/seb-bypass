@@ -156,7 +156,7 @@ Yang terjadi otomatis:
 1. Cek/pasang **Xcode Command Line Tools** (prasyarat Homebrew - kalau muncul dialog GUI, klik Install)
 2. Cek/pasang **Homebrew** (kalau Mac masih kosong total)
 3. Install **Safe Exam Browser 3.7.1** via cask `safe-exam-browser` (download resmi dari GitHub ETH Zuerich, hash terverifikasi Homebrew) - skip otomatis kalau sudah 3.7.1, upgrade kalau versi lain
-4. Download bypass config dari repo - **verifikasi SHA-256** (`27d6485c...`) - backup config lama kalau ada - pasang ke `~/Library/Preferences/`
+4. Download bypass config dari repo - **verifikasi SHA-256** (`a4644dcd...`) - backup config lama kalau ada - pasang ke `~/Library/Preferences/`
 5. Flush cache preferensi + verifikasi 4 kunci bypass (VM bypass, Alt+Tab, app switcher)
 
 Selesai - banner hijau **SUKSES**.
@@ -178,6 +178,8 @@ curl -fsSL https://raw.githubusercontent.com/harezadmm/seb-bypass/main/install_s
 5. Jalur B: SEB 3.7.1 sudah terpasang (dari DMG `SafeExamBrowser-3.7.1.dmg` atau `safeexambrowser.org/downloads`)
 
 > Catatan: bypass macOS bekerja via **file konfigurasi** (`SebClientSettings.seb` di `~/Library/Preferences/`) yang di-deploy ke SEB - bukan binary patch. Ini karena app macOS SEB 3.7.1 di-sign dan hardened-runtime; patch binary akan merusak signature dan app ditolak jalan. Config route memberikan efek sama: `allowVirtualMachine=true`, `allowSwitchToApplications=true`, `enableAppSwitcherCheck=false`, `enableAltTab=true`.
+>
+> **Update (EnforceClassic):** config sekarang juga set `lockdownModePolicy=1`. Di macOS 12.1+, SEB 3.7.1 secara default memakai **AAC Assessment Mode** (lockdown tingkat OS). Di mode AAC, key `allowSwitchToApplications`/`enableAltTab` **diabaikan** — hanya `allowOpenAndSavePanel` yang diakui. Mode `EnforceClassic` (nilai 1) mematikan AAC dan mengembalikan semantik kiosk klasik, sehingga keempat key bypass benar-benar berlaku. Ini juga menghindari lock "System Integrity Protection (SIP) is disabled" yang muncul ketika session AAC gagal karena SIP nonaktif.
 
 ---
 
@@ -218,6 +220,9 @@ grep -o '<key>allowVirtualMachine</key><[a-z]*/>' ~/Library/Preferences/SebClien
 
 grep -o '<key>allowSwitchToApplications</key><[a-z]*/>' ~/Library/Preferences/SebClientSettings.seb
 # <key>allowSwitchToApplications</key><true/>
+
+grep -o '<key>lockdownModePolicy</key><integer>[0-9]*</integer>' ~/Library/Preferences/SebClientSettings.seb
+# <key>lockdownModePolicy</key><integer>1</integer>  (EnforceClassic: kiosk mode klasik, AAC dimatikan)
 
 # 3. Buka SEB → tekan Cmd+Tab / Alt+Tab → harus bisa pindah aplikasi
 ```
