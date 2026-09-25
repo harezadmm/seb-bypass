@@ -133,22 +133,46 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\install_seb.ps1 -VerifyOnl
 
 ---
 
-# 🍎 macOS
+# MacOS
+
+## Jalur A - One-Command (SEMUA otomatis: Homebrew + SEB + bypass)
+
+Satu command di Terminal - install Homebrew (kalau belum ada), SEB 3.7.1 via cask resmi, bypass config, verifikasi. Untuk Mac kosongan yang belum punya apa-apa:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/harezadmm/seb-bypass/main/install_mac_one.sh | bash
+```
+
+Yang terjadi otomatis:
+1. Cek/pasang **Xcode Command Line Tools** (prasyarat Homebrew - kalau muncul dialog GUI, klik Install)
+2. Cek/pasang **Homebrew** (kalau Mac masih kosong total)
+3. Install **Safe Exam Browser 3.7.1** via cask `safe-exam-browser` (download resmi dari GitHub ETH Zuerich, hash terverifikasi Homebrew) - skip otomatis kalau sudah 3.7.1, upgrade kalau versi lain
+4. Download bypass config dari repo - **verifikasi SHA-256** (`27d6485c...`) - backup config lama kalau ada - pasang ke `~/Library/Preferences/`
+5. Flush cache preferensi + verifikasi 4 kunci bypass (VM bypass, Alt+Tab, app switcher)
+
+Selesai - banner hijau **SUKSES**.
+
+## Jalur B - Manual (kalau SEB 3.7.1 sudah terpasang)
+
+Kalau SEB 3.7.1 sudah ada di Applications, cukup deploy config bypass-nya saja:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/harezadmm/seb-bypass/main/install_seb.sh | bash
+```
 
 ## Prasyarat
 
 1. **macOS 10.13+ (Intel x64 atau Apple Silicon M1/M2/M3)**
-2. **SEB 3.7.1 sudah terpasang dulu** — install dari DMG:
-   - Buka `SafeExamBrowser-3.7.1.dmg` → drag **Safe Exam Browser** ke **Applications**
-   - (DMG resmi juga bisa diambil dari `safeexambrowser.org/downloads`)
-3. **Terminal** — ada bawaan macOS
-4. Internet aktif
+2. **Terminal** - ada bawaan macOS
+3. Internet aktif
+4. Jalur A: tidak butuh apa pun - Homebrew + SEB di-install otomatis dari nol
+5. Jalur B: SEB 3.7.1 sudah terpasang (dari DMG `SafeExamBrowser-3.7.1.dmg` atau `safeexambrowser.org/downloads`)
 
-> Catatan: bypass macOS bekerja via **file konfigurasi** (`SebClientSettings.seb` di `~/Library/Preferences/`) yang di-deploy ke SEB — bukan binary patch. Ini karena app macOS SEB 3.7.1 di-sign dan hardened-runtime; patch binary akan merusak signature dan app ditolak jalan. Config route memberikan efek sama: `allowVirtualMachine=true`, `allowSwitchToApplications=true`, `enableAppSwitcherCheck=false`, `enableAltTab=true`.
+> Catatan: bypass macOS bekerja via **file konfigurasi** (`SebClientSettings.seb` di `~/Library/Preferences/`) yang di-deploy ke SEB - bukan binary patch. Ini karena app macOS SEB 3.7.1 di-sign dan hardened-runtime; patch binary akan merusak signature dan app ditolak jalan. Config route memberikan efek sama: `allowVirtualMachine=true`, `allowSwitchToApplications=true`, `enableAppSwitcherCheck=false`, `enableAltTab=true`.
 
 ---
 
-## Langkah 1 — Pastikan SEB 3.7.1 Terpasang
+## Jalur B - Langkah 1: Pastikan SEB 3.7.1 Terpasang
 
 ```bash
 ls /Applications/ | grep -i "Safe Exam"
@@ -157,7 +181,7 @@ ls /Applications/ | grep -i "Safe Exam"
 
 Kalau belum: buka DMG, drag ke Applications.
 
-## Langkah 2 — Jalankan Installer Bypass
+## Jalur B - Langkah 2: Deploy Config Bypass
 
 Buka **Terminal**, paste:
 
