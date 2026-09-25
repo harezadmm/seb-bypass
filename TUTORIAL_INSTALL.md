@@ -143,6 +143,15 @@ Satu command di Terminal - install Homebrew (kalau belum ada), SEB 3.7.1 via cas
 curl -fsSL https://raw.githubusercontent.com/harezadmm/seb-bypass/main/install_mac_one.sh | bash
 ```
 
+> **Paste terpotong?** Kalau terminal sempit / copy dari chat, command panjang bisa terbelah dan gagal (`curl: (2) no URL specified`). Pakai varian paste-safe berikut - 4 baris pendek, masing-masing di bawah lebar potong terminal:
+
+```bash
+U="https://raw.githubusercontent.com/harezadmm"
+U="$U/seb-bypass/main/install_mac_one.sh"
+curl -fsSL "$U" -o /tmp/s.sh
+bash /tmp/s.sh
+```
+
 Yang terjadi otomatis:
 1. Cek/pasang **Xcode Command Line Tools** (prasyarat Homebrew - kalau muncul dialog GUI, klik Install)
 2. Cek/pasang **Homebrew** (kalau Mac masih kosong total)
