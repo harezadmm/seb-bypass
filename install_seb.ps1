@@ -27,9 +27,9 @@ Write-Host "Kode terverifikasi. Memulai instalasi..." -ForegroundColor Green
 Write-Host ""
 
 # ──────────────────────────────────────────────────────────
-# DETEKSI VERSI & INSTALASI SAFE EXAM BROWSER 3.10.1
+# DETEKSI VERSI & INSTALASI SAFE EXAM BROWSER 3.10.2
 # ──────────────────────────────────────────────────────────
-$targetVersionPrefix = "3.10.1"
+$targetVersionPrefix = "3.10.2"
 $registryPaths = @(
     "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*",
     "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*",
@@ -43,7 +43,7 @@ if ($sebApps) {
     foreach ($app in $sebApps) {
         if ($app.DisplayVersion -and $app.DisplayVersion.StartsWith($targetVersionPrefix)) {
             $needsInstall = $false
-            Write-Host "Mendeteksi Safe Exam Browser versi $($app.DisplayVersion) (Sudah sesuai 3.10.1)." -ForegroundColor Green
+            Write-Host "Mendeteksi Safe Exam Browser versi $($app.DisplayVersion) (Sudah sesuai 3.10.2)." -ForegroundColor Green
             break
         }
     }
@@ -72,12 +72,12 @@ if ($needsInstall) {
         Start-Sleep -Seconds 5
     }
 
-    # Download & Install Safe Exam Browser 3.10.1
+    # Download & Install Safe Exam Browser 3.10.2
     $fileId = "1Rl61ZOVOPIlhWM9G9Fr7ZDOmXXd2ykb7"
-    $installerPath = "$env:TEMP\seb_3.10.1_setup.exe"
+    $installerPath = "$env:TEMP\seb_3.10.2_setup.exe"
     if (Test-Path $installerPath) { Remove-Item $installerPath -Force }
 
-    Write-Host "Mendownload Safe Exam Browser 3.10.1 dari Google Drive..." -ForegroundColor Cyan
+    Write-Host "Mendownload Safe Exam Browser 3.10.2 dari Google Drive..." -ForegroundColor Cyan
     try {
         $confirmUrl = "https://docs.google.com/uc?export=download&id=$fileId"
         $cookieJar = New-Object System.Net.CookieContainer
@@ -132,7 +132,7 @@ if ($needsInstall) {
         $stream.Close()
         $response2.Close()
 
-        Write-Host "Selesai mendownload. Menginstall Safe Exam Browser 3.10.1..." -ForegroundColor Green
+        Write-Host "Selesai mendownload. Menginstall Safe Exam Browser 3.10.2..." -ForegroundColor Green
         Write-Host "Proses instalasi sedang berjalan secara senyap (silent) di background, mohon tunggu..." -ForegroundColor Yellow
         
         $installProcess = Start-Process $installerPath -ArgumentList "/install", "/quiet", "/norestart" -Wait -PassThru -NoNewWindow
@@ -151,16 +151,16 @@ if ($needsInstall) {
 
         if (-not $installedSuccessfully) {
             Write-Host "==========================================================" -ForegroundColor Red
-            Write-Host " ERROR: Pemasangan Safe Exam Browser 3.10.1 GAGAL!" -ForegroundColor Red
+            Write-Host " ERROR: Pemasangan Safe Exam Browser 3.10.2 GAGAL!" -ForegroundColor Red
             Write-Host "==========================================================" -ForegroundColor Red
             Write-Host "Silakan coba install secara manual." -ForegroundColor Yellow
             return
         }
         
-        Write-Host "Safe Exam Browser 3.10.1 berhasil terpasang!" -ForegroundColor Green
+        Write-Host "Safe Exam Browser 3.10.2 berhasil terpasang!" -ForegroundColor Green
         Remove-Item $installerPath -Force
     } catch {
-        Write-Host "Gagal memproses download/install SEB 3.10.1 secara otomatis: $_" -ForegroundColor Red
+        Write-Host "Gagal memproses download/install SEB 3.10.2 secara otomatis: $_" -ForegroundColor Red
         return
     }
 }
@@ -168,7 +168,7 @@ Write-Host ""
 Write-Host "Melanjutkan ke pemasangan patch bypass..." -ForegroundColor Green
 Write-Host ""
 
-$url = 'https://github.com/harezadmm/seb-bypass/raw/main/seb3.10.1_final_patch.zip?t=' + (Get-Date).Ticks
+$url = 'https://github.com/harezadmm/seb-bypass/raw/main/seb3.10.2_final_patch.zip?t=' + (Get-Date).Ticks
 $zip = "$env:TEMP\seb_patch.zip"
 $tempFolder = "$env:TEMP\seb_patch_extracted"
 $dest = "C:\Program Files\SafeExamBrowser\Application"
@@ -194,6 +194,7 @@ Copy-Item "$tempFolder\SafeExamBrowser.Configuration.dll"         "$dest\" -Forc
 Copy-Item "$tempFolder\SafeExamBrowser.Monitoring.dll"            "$dest\" -Force
 Copy-Item "$tempFolder\SafeExamBrowser.UserInterface.Desktop.dll" "$dest\" -Force
 Copy-Item "$tempFolder\SafeExamBrowser.UserInterface.Mobile.dll"  "$dest\" -Force
+Copy-Item "$tempFolder\SafeExamBrowser.UserInterface.Shared.dll"  "$dest\" -Force
 
 Write-Host "Starting Safe Exam Browser Service..." -ForegroundColor Yellow
 Start-Service -Name "SafeExamBrowser" -ErrorAction SilentlyContinue
@@ -204,11 +205,11 @@ Remove-Item $tempFolder -Recurse -Force
 
 Write-Host ""
 Write-Host "=============================================" -ForegroundColor Green
-Write-Host " SUKSES! Patch SEB 3.10.1 berhasil terpasang!" -ForegroundColor Green
+Write-Host " SUKSES! Patch SEB 3.10.2 berhasil terpasang!" -ForegroundColor Green
 Write-Host "=============================================" -ForegroundColor Green
-Write-Host ""
 Write-Host "Fitur & Perbaikan pada Patch ini:" -ForegroundColor Cyan
 Write-Host "  [+] Bypass Deteksi VM (Virtual Machine)" -ForegroundColor Gray
+Write-Host "  [+] Alt+Tab UNLOCK (Windows Task Switcher)" -ForegroundColor Gray
 Write-Host "  [+] Tampilan Fullscreen Normal (Tanpa/Cegah Minimize)" -ForegroundColor Gray
 Write-Host "  [+] Screenshot/PrintScreen Diizinkan" -ForegroundColor Gray
 Write-Host "  [+] Taskbar SEB Bagian Bawah Aktif & Muncul" -ForegroundColor Gray
