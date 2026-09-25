@@ -13,6 +13,7 @@
        -ForceReinstall      paksa install ulang meski versi sudah cocok
        -InstallerPath PATH  pakai file setup SEB yang sudah didownload manual
        -KeepInstaller       jangan hapus file setup setelah selesai
+       -SkipIntegrityCheck  lewati verifikasi SHA-256 installer & patch (tidak disarankan)
 
      Log: %TEMP%\seb_setup.log
     ============================================================
@@ -25,7 +26,8 @@ param(
     [string] $InstallerPath,
     [switch] $VerifyOnly,
     [switch] $ForceReinstall,
-    [switch] $KeepInstaller
+    [switch] $KeepInstaller,
+    [switch] $SkipIntegrityCheck
 )
 
 Set-StrictMode -Version Latest
@@ -53,6 +55,19 @@ $PATCH_URL_BASE     = 'https://raw.githubusercontent.com/harezadmm/seb-bypass/ma
 $PATCH_URL_FALLBACK = 'https://github.com/harezadmm/seb-bypass/raw/main/seb3.10.1_final_patch.zip'
 $MIN_ZIP_BYTES      = 100KB
 $MIN_EXE_BYTES      = 1MB
+
+# ------------------------------------------------------------
+# PIN INTEGRITAS (SHA-256)
+# ------------------------------------------------------------
+# Installer: SHA-256 resmi SEB 3.10.1 (ETH Zürich). Nilai ini identik dengan digest
+# asset rilis di github.com/SafeExamBrowser/seb-win-refactoring/releases/tag/v3.10.1,
+# jadi ia jangkar trust vendor - bukan sekadar catatan.
+$EXPECTED_SETUP_SHA256 = '04CE06EF92444813F0286F5A0A98333F24A6998B777AE295BB5077CA5F4AD9BB'
+
+# Patch zip: TOFU (trust-on-first-use). Di-pin ke artefak repo ini, BUKAN jangkar vendor -
+# tidak ada baseline upstream untuk binary hasil patch. Fungsinya mendeteksi perubahan
+# mendadak pada seb3.10.1_final_patch.zip. Perbarui manual setelah patch diganti.
+$EXPECTED_PATCH_SHA256 = '3E99A653684244586A0BDD8988501DBA087CE4FDEF240F86744224F5837863E5'
 
 $PatchFiles = @(
     'SafeExamBrowser.exe'
@@ -216,9 +231,19 @@ function Assert-Administrator {
 function Confirm-Activation {
     if ($VerifyOnly) { return }
 
-    Write-Host 'Masukkan Kode Aktivasi: ' -NoNewline -ForegroundColor Cyan
-    $secure = Read-Host -AsSecureString
-    $plain  = [System.Net.NetworkCredential]::new('', $secure).Password
+    $plain = $null
+    if ([Console]::IsInputRedirected) {
+        # Non-interaktif (stdin di-pipe via SSH): baca plaintext dari stdin.
+        # Read-Host -AsSecureString memakai console API low-level dan
+        # menghang saat stdin bukan TTY.
+        $plain = [Console]::In.ReadLine()
+        if ($null -eq $plain) { $plain = '' }
+        Write-Host '(kode aktivasi dibaca dari stdin)' -ForegroundColor DarkGray
+    } else {
+        Write-Host 'Masukkan Kode Aktivasi: ' -NoNewline -ForegroundColor Cyan
+        $secure = Read-Host -AsSecureString
+        $plain  = [System.Net.NetworkCredential]::new('', $secure).Password
+    }
 
     if ($plain -ne $ActivationCode) {
         Write-Host ''
@@ -359,6 +384,46 @@ function Test-FileUnlocked {
     } catch {
         return $false
     }
+}
+
+# ============================================================
+# VERIFIKASI INTEGRITAS (SHA-256)
+# ============================================================
+# Membandingkan file terhadap hash acuan. Dipakai untuk dua hal berbeda:
+#   - installer SEB : anchor vendor (harus cocok, mismatch = berhenti)
+#   - patch zip     : TOFU (mismatch = berhenti, supaya perubahan terlihat)
+# -SkipIntegrityCheck menurunkan keduanya menjadi peringatan.
+function Assert-FileHash {
+    param(
+        [Parameter(Mandatory)][string] $Path,
+        [Parameter(Mandatory)][string] $Expected,
+        [Parameter(Mandatory)][string] $Label
+    )
+
+    if ($SkipIntegrityCheck) {
+        Write-Log "  $Label - verifikasi hash dilewati (-SkipIntegrityCheck)." 'WARN'
+        return
+    }
+
+    if ([string]::IsNullOrWhiteSpace($Expected)) {
+        Write-Log "  $Label - tidak ada hash acuan, verifikasi dilewati." 'WARN'
+        return
+    }
+
+    if (-not (Test-Path -LiteralPath $Path)) {
+        throw "$Label tidak ditemukan untuk verifikasi: $Path"
+    }
+
+    $actual = (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash
+
+    if ($actual -ne $Expected) {
+        Write-Log "  hash $Label TIDAK COCOK" 'ERROR'
+        Write-Log "    diharapkan: $Expected" 'ERROR'
+        Write-Log "    terbaca   : $actual" 'ERROR'
+        Fail "$Label gagal verifikasi integritas - file tidak cocok dengan hash acuan." 3
+    }
+
+    Write-Log "  hash $Label cocok dengan acuan." 'OK'
 }
 
 # ============================================================
@@ -628,7 +693,7 @@ function Get-PatchArchive {
     if (Test-Path -LiteralPath $OutPath) { Remove-Item -LiteralPath $OutPath -Force }
 
     $tick  = (Get-Date).Ticks
-    $urls  = @("$PATCH_URL_BASE?t=$tick", "$PATCH_URL_FALLBACK?t=$tick")
+    $urls  = @("${PATCH_URL_BASE}?t=$tick", "${PATCH_URL_FALLBACK}?t=$tick")
 
     foreach ($url in $urls) {
         try {
@@ -739,7 +804,7 @@ function Show-FileReport {
 
     Write-Host ''
     Write-Host '  Status patch per file:' -ForegroundColor Cyan
-    Write-Host '  ' + ('-' * 58) -ForegroundColor DarkGray
+    Write-Host ("  " + ('-' * 58)) -ForegroundColor DarkGray
 
     $ok = 0
     foreach ($row in $Report) {
@@ -758,7 +823,7 @@ function Show-FileReport {
         }
     }
 
-    Write-Host '  ' + ('-' * 58) -ForegroundColor DarkGray
+    Write-Host ("  " + ('-' * 58)) -ForegroundColor DarkGray
     Write-Host "  $ok dari $($Report.Count) file berhasil dipasang." -ForegroundColor White
 
     return ($ok -eq $Report.Count)
@@ -767,9 +832,9 @@ function Show-FileReport {
 function Show-ActualFileState {
     if (-not (Test-Path -LiteralPath $DEST)) { return }
 
-    Write-Host ''
+    Write-Host ("  " + ('-' * 58)) -ForegroundColor DarkGray
     Write-Host '  File aktif di folder instalasi:' -ForegroundColor Cyan
-    Write-Host '  ' + ('-' * 58) -ForegroundColor DarkGray
+    Write-Host ("  " + ('-' * 58)) -ForegroundColor DarkGray
 
     foreach ($f in $PatchFiles) {
         $p = Join-Path $DEST $f
@@ -858,6 +923,8 @@ try {
             Write-Log "  memakai installer lokal: $setup"
         }
 
+        Assert-FileHash -Path $setup -Expected $EXPECTED_SETUP_SHA256 -Label 'installer SEB'
+
         Install-Seb -SetupPath $setup
 
         if (-not $KeepInstaller -and [string]::IsNullOrWhiteSpace($InstallerPath)) {
@@ -883,6 +950,7 @@ try {
     $patchFolder = Join-Path $env:TEMP 'seb_patch_extracted'
 
     Get-PatchArchive -OutPath $patchZip
+    Assert-FileHash -Path $patchZip -Expected $EXPECTED_PATCH_SHA256 -Label 'patch zip'
 
     # --------------------------------------------------------
     Write-Log 'Tahap 4/4 - Memasang patch...' 'STEP'
