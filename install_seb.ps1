@@ -1,7 +1,7 @@
 #Requires -Version 5.1
 <#
     ============================================================
-     Safe Exam Browser 3.10.1 - Automated Windows Setup
+     Safe Exam Browser 3.10.2 - Automated Windows Setup
     ============================================================
      Jalankan sebagai Administrator.
 
@@ -40,8 +40,8 @@ $ProgressPreference    = 'SilentlyContinue'
 # ============================================================
 # KONSTANTA
 # ============================================================
-$TARGET_VERSION     = '3.10.1'
-$TARGET_VERSION_ALT = '3.10.1'
+$TARGET_VERSION     = '3.10.2'
+$TARGET_VERSION_ALT = '3.10.2'
 $SERVICE_NAME       = 'SafeExamBrowser'
 # $env:ProgramFiles kosong di luar Windows; fallback ke path Windows standar supaya
 # script tidak gagal bind saat dimuat (guard platform di bawah yang memberi pesan benar).
@@ -51,23 +51,23 @@ $DEST = if ($env:ProgramFiles) {
     'C:\Program Files\SafeExamBrowser\Application'
 }
 $DRIVE_FILE_ID      = '1Rl61ZOVOPIlhWM9G9Fr7ZDOmXXd2ykb7'
-$PATCH_URL_BASE     = 'https://raw.githubusercontent.com/harezadmm/seb-bypass/main/seb3.10.1_final_patch.zip'
-$PATCH_URL_FALLBACK = 'https://github.com/harezadmm/seb-bypass/raw/main/seb3.10.1_final_patch.zip'
+$PATCH_URL_BASE     = 'https://raw.githubusercontent.com/harezadmm/seb-bypass/main/seb3.10.2_final_patch.zip'
+$PATCH_URL_FALLBACK = 'https://github.com/harezadmm/seb-bypass/raw/main/seb3.10.2_final_patch.zip'
 $MIN_ZIP_BYTES      = 100KB
 $MIN_EXE_BYTES      = 1MB
 
 # ------------------------------------------------------------
 # PIN INTEGRITAS (SHA-256)
 # ------------------------------------------------------------
-# Installer: SHA-256 resmi SEB 3.10.1 (ETH Zürich). Nilai ini identik dengan digest
-# asset rilis di github.com/SafeExamBrowser/seb-win-refactoring/releases/tag/v3.10.1,
+# Installer: SHA-256 resmi SEB 3.10.2 (ETH Zürich). Nilai ini identik dengan digest
+# asset rilis di github.com/SafeExamBrowser/seb-win-refactoring/releases/tag/v3.10.2,
 # jadi ia jangkar trust vendor - bukan sekadar catatan.
-$EXPECTED_SETUP_SHA256 = '04CE06EF92444813F0286F5A0A98333F24A6998B777AE295BB5077CA5F4AD9BB'
+$EXPECTED_SETUP_SHA256 = '45E463FF49DCC39D6BB48CDE3749AB7FA31D502F7DD271E9A86B04A8948893F9'
 
 # Patch zip: TOFU (trust-on-first-use). Di-pin ke artefak repo ini, BUKAN jangkar vendor -
 # tidak ada baseline upstream untuk binary hasil patch. Fungsinya mendeteksi perubahan
-# mendadak pada seb3.10.1_final_patch.zip. Perbarui manual setelah patch diganti.
-$EXPECTED_PATCH_SHA256 = '3E99A653684244586A0BDD8988501DBA087CE4FDEF240F86744224F5837863E5'
+# mendadak pada seb3.10.2_final_patch.zip. Perbarui manual setelah patch diganti.
+$EXPECTED_PATCH_SHA256 = 'F39F69EF0BBC43E166D6B5CDAC643B62A87442995AB918494AB5BDEF0C404511'
 
 $PatchFiles = @(
     'SafeExamBrowser.exe'
@@ -76,6 +76,7 @@ $PatchFiles = @(
     'SafeExamBrowser.Monitoring.dll'
     'SafeExamBrowser.UserInterface.Desktop.dll'
     'SafeExamBrowser.UserInterface.Mobile.dll'
+    'SafeExamBrowser.UserInterface.Shared.dll'
 )
 
 $UninstallRoots = @(
@@ -856,7 +857,7 @@ try {
     # akan membatalkan seluruh instalasi. Jangan biarkan quirk terminal menggagalkan setup.
     try { Clear-Host } catch { }
 
-    Write-Banner 'SAFE EXAM BROWSER 3.10.1 - AUTO SETUP' 'Cyan'
+    Write-Banner 'SAFE EXAM BROWSER 3.10.2 - AUTO SETUP' 'Cyan'
     Write-Log "Log: $LogPath"
     Write-Log "Waktu: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
 
@@ -913,7 +914,7 @@ try {
         $setup = $InstallerPath
 
         if ([string]::IsNullOrWhiteSpace($setup)) {
-            $setup = Join-Path $env:TEMP 'seb_3.10.1_setup.exe'
+            $setup = Join-Path $env:TEMP 'seb_3.10.2_setup.exe'
             Write-Log '  mengunduh installer dari Google Drive...'
             Save-GoogleDriveFile -FileId $DRIVE_FILE_ID -OutPath $setup
         } else {
@@ -992,7 +993,7 @@ try {
     Write-Host ''
     if ($finalOk -and $allPatched) {
         Write-Host ('=' * 62) -ForegroundColor Green
-        Write-Host '  SUKSES - Safe Exam Browser 3.10.1 + patch terpasang.' -ForegroundColor Green
+        Write-Host '  SUKSES - Safe Exam Browser 3.10.2 + patch terpasang.' -ForegroundColor Green
         Write-Host ('=' * 62) -ForegroundColor Green
         Write-Host ''
         Write-Host '  Fitur patch:' -ForegroundColor Cyan
@@ -1001,6 +1002,7 @@ try {
         Write-Host '    [+] Screenshot / PrintScreen diizinkan' -ForegroundColor Gray
         Write-Host '    [+] Taskbar SEB bawah aktif' -ForegroundColor Gray
         Write-Host '    [+] Tombol navigasi browser aktif' -ForegroundColor Gray
+        Write-Host '    [+] Alt+Tab UNLOCK (Windows Task Switcher)' -ForegroundColor Gray
         Write-Host '    [+] Tombol power / shutdown di taskbar aktif' -ForegroundColor Gray
         Write-Host ''
         Abort -Code 0

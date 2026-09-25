@@ -1,4 +1,4 @@
-# one_liner.ps1 - Universal bootstrap: SEB 3.10.1 + bypass patch, self-elevating.
+# one_liner.ps1 - Universal bootstrap: SEB 3.10.2 + bypass patch, self-elevating.
 # Cara pakai (PowerShell mana saja, admin / non-admin):
 #   [Net.ServicePointManager]::SecurityProtocol='Tls12'
 #   irm https://raw.githubusercontent.com/harezadmm/seb-bypass/main/one_liner.ps1 -OutFile $env:TEMP\seb1.ps1
