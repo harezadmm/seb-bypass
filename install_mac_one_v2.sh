@@ -49,6 +49,7 @@ SYSTEM_PREF="${SYSTEM_PREF_DIR}/${CONFIG_NAME}"
 MODE_DMG=1          # 1 = DMG resmi (default), 0 = paksa brew cask
 MODE_SYSTEM=0       # 1 = pasang juga di /Library/Preferences (sudo)
 ALLOW_REPAIR=1      # 1 = perbaiki kunci yang salah otomatis
+FAILED_SYSTEM=0     # 1 = config sistem gagal dipasang (bypass tidak akan berpengaruh)
 VERIFY_ONLY=0       # 1 = lewati install, cuma verifikasi status
 ARG_DMG=""
 ARG_CONFIG=""
@@ -493,9 +494,29 @@ else
     killall cfprefsd >/dev/null 2>&1 || true
     ok "Cache preferensi (cfprefsd) di-flush"
 
+    # ------------------------------------------------------------
+    # Config SISTEM: KALAU ADA, IA MENANG.
+    #
+    # Ini cacat yang lama tidak tertangani: SEB membaca
+    # /Library/Preferences/SebClientSettings.seb LEBIH DULU dan
+    # mengabaikan ~/Library/Preferences/ sepenuhnya selama file sistem
+    # ada. Jadi memasang config hanya ke folder user = tidak berpengaruh
+    # apa pun pada SEB, betapa pun benar isinya.
+    #
+    # Karena itu: begitu file sistem terdeteksi ada, ia WAJIB ikut
+    # diperbarui. Tidak lagi menunggu --system.
+    # ------------------------------------------------------------
+    SYS_REASON=""
     if [ "$MODE_SYSTEM" -eq 1 ]; then
+        SYS_REASON="diminta lewat --system"
+    elif [ -f "$SYSTEM_PREF" ]; then
+        SYS_REASON="file sistem ada, dan SEB memakainya - bukan config user"
+    fi
+
+    if [ -n "$SYS_REASON" ]; then
         echo ""
         info "Memasang config sistem di ${SYSTEM_PREF_DIR}"
+        info "  Alasan: ${SYS_REASON}"
         info "  (butuh sudo - akan muncul prompt password)"
         if sudo mkdir -p "$SYSTEM_PREF_DIR" && \
            sudo cp "$CONFIG_DEST" "${SYSTEM_PREF}.tmp.$$" && \
@@ -504,7 +525,10 @@ else
             ok "Config sistem terpasang"
             sudo killall cfprefsd >/dev/null 2>&1 || true
         else
-            warn "Config sistem gagal dipasang - lanjut dengan config user"
+            warn "Config sistem GAGAL dipasang."
+            warn "  Selama file itu masih berisi config lama, SEB akan"
+            warn "  MENGABAIKAN config user dan bypass ini TIDAK berpengaruh."
+            FAILED_SYSTEM=1
         fi
     fi
 fi
@@ -808,7 +832,16 @@ fi
 # Hasil
 # ------------------------------------------------------------
 echo ""
-if [ "$KEYS_OK" -eq "$KEYS_TOTAL" ]; then
+if [ "$FAILED_SYSTEM" -eq 1 ]; then
+    echo ""
+    err "Config sistem GAGAL dipasang - bypass ini TIDAK berpengaruh."
+    info "SEB membaca ${SYSTEM_PREF} dan mengabaikan config user."
+    info "Perbaiki manual:"
+    info "  sudo cp \"${CONFIG_DEST}\" \"${SYSTEM_PREF}\" && sudo killall cfprefsd"
+    echo ""
+fi
+
+if [ "$KEYS_OK" -eq "$KEYS_TOTAL" ] && [ "$FAILED_SYSTEM" -eq 0 ]; then
     echo -e "${GREEN}${BOLD}==================================================${NC}"
     echo -e "${GREEN}${BOLD}     SUKSES - SEB ${SEB_VERSION} + BYPASS AKTIF${NC}"
     echo -e "${GREEN}${BOLD}==================================================${NC}"
