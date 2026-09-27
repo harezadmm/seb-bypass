@@ -83,7 +83,7 @@ $EXPECTED_SETUP_SHA256 = '45E463FF49DCC39D6BB48CDE3749AB7FA31D502F7DD271E9A86B04
 #                        AllowedDisplays=16 / InternalDisplayOnly=off /
 #                        IgnoreError=on / AlwaysOn=off  (bypass deteksi multi-layar)
 #   Configuration.dll -> (sudah ada) SecurityDataMapper + InputDataMapper force-map
-$EXPECTED_PATCH_SHA256 = '35D86284402D075DBC5AA7FF4E93C60804418F43859738A315EBF96E3B551482'
+$EXPECTED_PATCH_SHA256 = '20E9E96FF692685BAACB5FE12AAB610597F220A3111CB2A511B0D2F41385664F'
 
 $PatchFiles = @(
     'SafeExamBrowser.exe'
