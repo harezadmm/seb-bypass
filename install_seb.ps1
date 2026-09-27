@@ -56,6 +56,13 @@ $PATCH_URL_FALLBACK = 'https://github.com/harezadmm/seb-bypass/raw/main/seb3.10.
 $MIN_ZIP_BYTES      = 100KB
 $MIN_EXE_BYTES      = 1MB
 
+# Sumber utama installer: asset rilis resmi ETH Zurich. URL ini mengarah ke berkas
+# yang PERSIS sama dengan $EXPECTED_SETUP_SHA256 di bawah, jadi integritasnya
+# tervalidasi tanpa perlu menebak. Google Drive tetap dipakai sebagai cadangan,
+# tetapi fileID saat ini menunjuk ke SEB 3.10.1.864 (350.934.000 B) sehingga
+# akan SELALU gagal di gerbang hash selama belum diupdate ke rilis 3.10.2.
+$OFFICIAL_SETUP_URL = 'https://github.com/SafeExamBrowser/seb-win-refactoring/releases/download/v3.10.2/SEB_3.10.2.920_SetupBundle.exe'
+
 # ------------------------------------------------------------
 # PIN INTEGRITAS (SHA-256)
 # ------------------------------------------------------------
@@ -67,7 +74,16 @@ $EXPECTED_SETUP_SHA256 = '45E463FF49DCC39D6BB48CDE3749AB7FA31D502F7DD271E9A86B04
 # Patch zip: TOFU (trust-on-first-use). Di-pin ke artefak repo ini, BUKAN jangkar vendor -
 # tidak ada baseline upstream untuk binary hasil patch. Fungsinya mendeteksi perubahan
 # mendadak pada seb3.10.2_final_patch.zip. Perbarui manual setelah patch diganti.
-$EXPECTED_PATCH_SHA256 = 'F39F69EF0BBC43E166D6B5CDAC643B62A87442995AB918494AB5BDEF0C404511'
+#
+# v3 (2026-09-27) menambahkan tiga hal ke patch matrix:
+#   Monitoring.dll    -> RemoteSessionDetector.IsRemoteSession() = false
+#                        (menggagalkan "Detected remote session ... Aborting..." di
+#                         SafeExamBrowser.exe :: RemoteSessionOperation.ValidatePolicy)
+#   Configuration.dll -> DisplayDataMapper force-map:
+#                        AllowedDisplays=16 / InternalDisplayOnly=off /
+#                        IgnoreError=on / AlwaysOn=off  (bypass deteksi multi-layar)
+#   Configuration.dll -> (sudah ada) SecurityDataMapper + InputDataMapper force-map
+$EXPECTED_PATCH_SHA256 = '05672DF3B0FB2EB21063749F4A355630E8D5B2A6BB4EBC996F872456E4E8D09E'
 
 $PatchFiles = @(
     'SafeExamBrowser.exe'
@@ -469,6 +485,32 @@ function Save-RemoteFile {
     } finally {
         $response.Close()
     }
+}
+
+function Save-OfficialInstaller {
+    # Unduh installer dari asset rilis resmi ETH Zurich. Mengembalikan $true jika
+    # berkas yang diunduh benar-benar sebuah PE (bukan halaman HTML perantara).
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][string] $Uri,
+        [Parameter(Mandatory)][string] $OutPath
+    )
+
+    try {
+        if (Test-Path -LiteralPath $OutPath) { Remove-Item -LiteralPath $OutPath -Force }
+        Write-Log "  mengunduh installer resmi SEB 3.10.2 dari ETH Zürich..."
+        [void](Save-RemoteFile -Uri $Uri -OutPath $OutPath)
+
+        if (Test-PortableExecutable -Path $OutPath) {
+            Write-Log ("  unduhan resmi valid ({0:N1} MB)" -f ((Get-Item -LiteralPath $OutPath).Length / 1MB)) 'OK'
+            return $true
+        }
+        Write-Log '  unduhan resmi bukan file executable yang valid.' 'WARN'
+    } catch {
+        Write-Log "  unduhan resmi gagal: $($_.Exception.Message)" 'WARN'
+    }
+
+    return $false
 }
 
 function Save-GoogleDriveFile {
@@ -915,8 +957,22 @@ try {
 
         if ([string]::IsNullOrWhiteSpace($setup)) {
             $setup = Join-Path $env:TEMP 'seb_3.10.2_setup.exe'
-            Write-Log '  mengunduh installer dari Google Drive...'
-            Save-GoogleDriveFile -FileId $DRIVE_FILE_ID -OutPath $setup
+            # Sumber resmi lebih dulu: hash-nya dijamin cocok dengan jangkar vendor.
+            # Google Drive hanya cadangan, dan baru berguna setelah fileID-nya
+            # diupdate ke rilis 3.10.2 (saat ini masih menunjuk ke 3.10.1).
+            if (-not (Save-OfficialInstaller -Uri $OFFICIAL_SETUP_URL -OutPath $setup)) {
+                Write-Log '  beralih ke Google Drive...' 'WARN'
+                Save-GoogleDriveFile -FileId $DRIVE_FILE_ID -OutPath $setup
+            }
+
+            # Diagnostik: catat versi yang benar-benar terunduh supaya kegagalan
+            # verifikasi hash langsung menunjukkan penyebabnya (versi salah).
+            if (Test-Path -LiteralPath $setup) {
+                $vi = (Get-Item -LiteralPath $setup).VersionInfo
+                if ($vi.ProductVersion) {
+                    Write-Log "  versi installer terunduh: $($vi.ProductVersion)"
+                }
+            }
         } else {
             if (-not (Test-Path -LiteralPath $setup)) {
                 Fail "File installer tidak ditemukan: $setup"

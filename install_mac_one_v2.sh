@@ -20,7 +20,7 @@ set -u
 REPO_RAW="https://raw.githubusercontent.com/harezadmm/seb-bypass/main"
 
 CONFIG_NAME="SebClientSettings.seb"
-CONFIG_SHA256="a4644dcd571babe83a2bc4ac3c4cdf7578b1c0e278f4ea84b9ce449ea298bde4"
+CONFIG_SHA256="d37df4b0df1ff20854ff3744a5ac0fca41dde3b43106a0e8111b1801f3578fc3"
 CONFIG_URL="${REPO_RAW}/${CONFIG_NAME}"
 CONFIG_DEST="$HOME/Library/Preferences/${CONFIG_NAME}"
 
@@ -515,34 +515,45 @@ plist_get() {
     printf '%s' "$v"
 }
 
+# Set bool. Coba -replace dulu; kalau kunci BELUM ADA di plist,
+# plutil -replace GAGAL, jadi jatuh ke -insert / PlistBuddy Add.
 plist_set_bool() {
     local f="$1" k="$2" val="$3" b
     if [ "$val" = "true" ]; then b=YES; else b=NO; fi
     if command -v plutil >/dev/null 2>&1; then
         $PLSET_SUDO plutil -replace "$k" -bool "$b" "$f" >/dev/null 2>&1 \
             && return 0
+        $PLSET_SUDO plutil -insert "$k" -bool "$b" "$f" >/dev/null 2>&1 \
+            && return 0
     fi
     if [ -x /usr/libexec/PlistBuddy ]; then
         $PLSET_SUDO /usr/libexec/PlistBuddy -c "Set :${k} ${val}" "$f" \
+            >/dev/null 2>&1 && return 0
+        $PLSET_SUDO /usr/libexec/PlistBuddy -c "Add :${k} bool ${val}" "$f" \
             >/dev/null 2>&1 && return 0
     fi
     return 1
 }
 
+# Set integer. Sama: -replace dulu, -insert kalau kunci belum ada.
 plist_set_int() {
     local f="$1" k="$2" val="$3"
     if command -v plutil >/dev/null 2>&1; then
         $PLSET_SUDO plutil -replace "$k" -integer "$val" "$f" \
             >/dev/null 2>&1 && return 0
+        $PLSET_SUDO plutil -insert "$k" -integer "$val" "$f" \
+            >/dev/null 2>&1 && return 0
     fi
     if [ -x /usr/libexec/PlistBuddy ]; then
         $PLSET_SUDO /usr/libexec/PlistBuddy -c "Set :${k} ${val}" "$f" \
+            >/dev/null 2>&1 && return 0
+        $PLSET_SUDO /usr/libexec/PlistBuddy -c "Add :${k} integer ${val}" "$f" \
             >/dev/null 2>&1 && return 0
     fi
     return 1
 }
 
-KEYS_TOTAL=5
+KEYS_TOTAL=20
 KEYS_OK=0
 KEYS_FIXED=0
 
@@ -570,14 +581,99 @@ verify_bool() {
     return 1
 }
 
-# --- Cmd+Tab: di macOS kunci ini bernama enableAltTab.
-#     Dokumentasi sumber SEB: "durch Zulassen des
-#     Programmumschalters cmd-Tab" (mengizinkan app switcher
-#     Cmd+Tab). Nama enableCommandTab TIDAK ada di SEB.
-verify_bool enableAltTab true              "Cmd+Tab / ganti aplikasi"
-verify_bool allowSwitchToApplications true "boleh pindah aplikasi"
+verify_int() {
+    local key="$1" expect="$2" label="$3" got
+    got="$(plist_get "$EFFECTIVE" "$key")"
+    if [ "$got" = "$expect" ]; then
+        ok "${key} = ${expect}    (${label})"
+        KEYS_OK=$((KEYS_OK+1))
+        return 0
+    fi
+    warn "${key} = ${got:-<kosong>} (harusnya ${expect})"
+    if [ "$ALLOW_REPAIR" -eq 1 ] && [ "$VERIFY_ONLY" -eq 0 ]; then
+        if plist_set_int "$EFFECTIVE" "$key" "$expect"; then
+            got="$(plist_get "$EFFECTIVE" "$key")"
+            if [ "$got" = "$expect" ]; then
+                ok "${key} diperbaiki = ${expect}    (${label})"
+                KEYS_FIXED=$((KEYS_FIXED+1))
+                KEYS_OK=$((KEYS_OK+1))
+                return 0
+            fi
+        fi
+    fi
+    err "${key} tetap salah - ${label} TIDAK aktif"
+    return 1
+}
+
+# --- KUNCI INERT: enableAltTab terdaftar di SEBSettings.m:530-531 dan punya
+#     checkbox di PreferencesSecurity.xib:1979, TETAPI tidak ada satu pun
+#     berkas .m yang membacanya. Di macOS kunci ini TIDAK BERPENGARUH -- sisa
+#     dari basis kode Windows. Diset true hanya demi kompatibilitas.
+#     Yang benar-benar menentukan Cmd+Tab adalah allowSwitchToApplications:
+#     saat true, SEB memakai cabang kiosk longgar SEBController.m:7851-7857
+#     yang TIDAK memasang NSApplicationPresentationDisableProcessSwitching.
+verify_bool enableAltTab true              "kompatibilitas (INERT di macOS)"
+verify_bool allowSwitchToApplications true "boleh pindah aplikasi (Cmd+Tab)"
 verify_bool enableAppSwitcherCheck false   "cek app-switcher dimatikan"
 verify_bool allowVirtualMachine true       "bypass deteksi VM"
+
+# --- BYPASS DETEKSI MULTI-SCREEN
+#     Penegak: SEBController.m:5345 conditionallyTerminateDisplayMirroring.
+#     Default kunci ada di SEBSettings.m:202-217.
+#
+#     allowedDisplaysMaxNumber (default 1) -- SEBController.m:5504-5515:
+#         NSUInteger displaysCounter = (mainScreen != nil);   // = 1
+#         if (displaysCounter < maxAllowedDisplays) { aktif } else { inactive }
+#       Dengan nilai 1, layar kedua dan seterusnya ditandai INACTIVE.
+#       WAJIB diverifikasi lewat log SEB, bukan diasumsikan berhasil:
+#         - baris "Current Settings: Maximum allowed displays: N"
+#         - TIDAK boleh ada baris "Flagged screen ... as inactive"
+#
+#     allowDisplayMirroring (default @NO) -- SEBController.m:5400-5424:
+#       SEB MEMBONGKAR mirroring secara paksa via CGConfigureDisplayMirrorOfDisplay
+#       begitu mirroring terdeteksi.
+#
+#     allowedDisplayBuiltin (default @YES) -- SEBController.m:5450: memaksa
+#       display built-in sebagai layar utama.
+#     allowedDisplayBuiltinEnforce (default @YES) -- SEBController.m:5464:
+#       bila built-in tidak ada -> noRequiredBuiltInScreenAvailable = YES (:5469)
+#       -> notifikasi detectedRequiredBuiltinDisplayMissing (:5524) -> kunci layar.
+#
+#     CATATAN: allowedDisplaysIgnoreFailure terdaftar di SEBSettings.m:214 dan
+#     punya checkbox di XIB, tetapi TIDAK PERNAH DIBACA oleh kode mana pun.
+#     Inert -- jangan diandalkan sebagai jaring pengaman.
+verify_int  allowedDisplaysMaxNumber 16         "izinkan banyak layar (default 1 = layar ke-2 dimatikan)"
+verify_bool allowDisplayMirroring true          "izinkan display mirroring"
+verify_bool allowedDisplayBuiltin false         "display built-in tidak diwajibkan"
+verify_bool allowedDisplayBuiltinEnforce false  "penegakan display built-in dimatikan"
+
+# --- BYPASS PEMICU KELUAR OTOMATIS
+#     SEBController.m punya beberapa jalur yang membuat SEB KELUAR SENDIRI.
+#     Semuanya hanya membaca config - tidak ada yang perlu di-patch di macOS.
+#       :4323-4324  allowScreenSharing = allowScreenSharing && !screenSharingMacEnforceBlocked
+#       :4327       if (!allowScreenSharing && (ScreensharingAgent || AppleVNCServer))
+#                       -> "Screen Sharing Detected!" + SEB keluar
+#       :4319       allowDictation dibaca
+#       :4340       if (!allowSiri && SiriService && Siri aktif)
+#                       -> "Siri Detected!" + SEB keluar
+#     KEDUA kunci screen sharing harus benar: :4323 adalah AND, :4324 adalah NOT.
+verify_bool allowScreenSharing true              "izinkan screen sharing (false = SEB keluar)"
+verify_bool screenSharingMacEnforceBlocked false "jangan paksa blokir screen sharing"
+verify_bool allowSiri true                       "izinkan Siri (false = SEB keluar)"
+verify_bool allowDictation true                  "izinkan dictation"
+
+# --- KUNCI AAC + CAPTURE
+#     allowWindowCapture=true adalah kunci AAC: SEBController.m:7731 menghitung
+#     _isAACEnabled = !screenCapture && !windowCapture && !screenSharing && ...
+#     Dengan capture diizinkan, AAC mati, dan blok penegakan window (:4972) dilewati -
+#     itu yang membebaskan screenshot dan CleanShot X.
+verify_bool allowWindowCapture true              "kunci AAC - screenshot & CleanShot X"
+verify_bool allowScreenCapture true              "izinkan screen capture"
+verify_bool detectAccessibilityApps false        "jangan bunuh app accessibility (CleanShot X)"
+verify_bool autoQuitApplications false           "jangan auto-quit aplikasi lain"
+verify_bool allowDictionaryLookup true           "izinkan dictionary lookup"
+verify_bool enablePrintScreen true               "izinkan PrintScreen"
+verify_bool browserWindowAllowAddressBar true    "tampilkan address bar"
 
 # --- lockdownModePolicy = 1 (EnforceClassic).
 #     macOS 12.1+ default AAC Assessment Mode -> kunci di atas
@@ -629,9 +725,24 @@ if [ "$KEYS_OK" -eq "$KEYS_TOTAL" ]; then
     echo ""
     echo "  Fitur aktif:"
     echo "   - Cmd+Tab  : ganti aplikasi (app switcher macOS)"
-    echo "                enableAltTab=true"
-    echo "                + allowSwitchToApplications=true"
+    echo "                allowSwitchToApplications=true   <- INI penentunya"
     echo "                + enableAppSwitcherCheck=false"
+    echo "                (enableAltTab INERT di macOS: terdaftar + ada"
+    echo "                 checkbox, tapi nol pembaca di kode. Diset demi"
+    echo "                 kompatibilitas saja.)"
+    echo "   - Multi-layar: allowedDisplaysMaxNumber=16"
+    echo "                  allowDisplayMirroring=true"
+    echo "                  allowedDisplayBuiltin=false"
+    echo "                  allowedDisplayBuiltinEnforce=false"
+    echo "   - Anti-keluar: allowScreenSharing=true"
+    echo "                  screenSharingMacEnforceBlocked=false"
+    echo "                  allowSiri=true / allowDictation=true"
+    echo "                  (tanpa ini SEB keluar sendiri saat deteksi"
+    echo "                   screen sharing / Siri)"
+    echo "   - Screenshot : allowWindowCapture=true (kunci AAC)"
+    echo "                  allowScreenCapture=true"
+    echo "                  detectAccessibilityApps=false"
+    echo "                  (CleanShot X dibebaskan)"
     echo "   - Cmd+Q    : keluar aplikasi (allowQuit)"
     echo "   - VM bypass: allowVirtualMachine=true"
     echo "   - Kiosk klasik: lockdownModePolicy=1 (AAC dimatikan)"
@@ -640,6 +751,10 @@ if [ "$KEYS_OK" -eq "$KEYS_TOTAL" ]; then
     echo "   1. Tutup SEB kalau sedang jalan (config dibaca saat start)"
     echo "   2. Buka SEB, masuk ke halaman ujian"
     echo "   3. Tekan Cmd+Tab -> harus muncul app switcher macOS"
+    echo "   4. Colok monitor kedua / aktifkan Sidecar"
+    echo "      -> SEB TIDAK boleh menampilkan kunci layar"
+    echo "      -> cek log: maksimal display harus 16, dan tidak ada"
+    echo "         baris 'Flagged screen ... as inactive'"
     echo ""
     echo "  Kalau Cmd+Tab masih terkunci:"
     echo "   - Pastikan macOS >= 12.1 dan lockdownModePolicy = 1"
@@ -654,8 +769,11 @@ else
     err "${KEYS_OK}/${KEYS_TOTAL} kunci benar - TIDAK semua fitur aktif"
     echo ""
     echo "  Perbaiki manual:"
-    echo "    plutil -replace enableAltTab -bool YES \"${EFFECTIVE}\""
     echo "    plutil -replace lockdownModePolicy -integer 1 \"${EFFECTIVE}\""
+    echo "    plutil -replace allowedDisplaysMaxNumber -integer 16 \"${EFFECTIVE}\""
+    echo "    plutil -replace allowDisplayMirroring -bool YES \"${EFFECTIVE}\""
+    echo "    plutil -replace allowedDisplayBuiltin -bool NO \"${EFFECTIVE}\""
+    echo "    plutil -replace allowedDisplayBuiltinEnforce -bool NO \"${EFFECTIVE}\""
     echo "    killall cfprefsd"
     echo ""
     exit 1
@@ -668,6 +786,11 @@ echo "  Troubleshooting:"
 echo "   - 'bad CPU type'          : DMG 3.7.1 universal (x86_64+arm64)"
 echo "   - Cmd+Tab tetap terkunci  : lockdownModePolicy harus 1;"
 echo "                               tutup SEB dulu sebelum re-run"
+echo "   - Layar ke-2 tetap mati   : allowedDisplaysMaxNumber harus >= 16."
+echo "                               Kalau file CONFIG UJIAN juga memuat"
+echo "                               kunci ini (default 1), config ujian"
+echo "                               MENANG atas config ini - patch juga"
+echo "                               file .seb ujiannya."
 echo "   - Config user diabaikan   : cek /Library/Preferences/"
 echo "                               SebClientSettings.seb - kalau ada,"
 echo "                               itu yang dipakai SEB. Perbaiki:"
