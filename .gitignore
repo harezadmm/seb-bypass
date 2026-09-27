@@ -1,0 +1,7 @@
+# Installer bundles — never commit (too large for git, GitHub hard-rejects >100 MB)
+SEB_*_SetupBundle.exe
+SafeExamBrowser-*.dmg
+
+# Local edit backups
+*.bak
+*.bak-*
