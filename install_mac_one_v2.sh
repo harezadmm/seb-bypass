@@ -52,6 +52,7 @@ ALLOW_REPAIR=1      # 1 = perbaiki kunci yang salah otomatis
 VERIFY_ONLY=0       # 1 = lewati install, cuma verifikasi status
 ARG_DMG=""
 ARG_CONFIG=""
+ARG_PATCH_EXAM=""     # "" = tidak dipakai; "__AUTO__" = cari sendiri di ~/Downloads
 
 usage() {
     cat <<'USAGE'
@@ -65,6 +66,13 @@ Opsi:
   --system          Pasang juga di /Library/Preferences/ (butuh sudo).
                     Dipakai kalau SEB tetap terkunci padahal config
                     user sudah benar - config sistem menimpanya.
+  --patch-exam [file.seb]
+                    Terapkan set bypass penuh ke CONFIG UJIAN. Di macOS
+                    config ujian MENANG atas client settings, jadi tanpa
+                    langkah ini daftar prohibitedProcesses bawaan config
+                    ujian tetap berlaku. Tanpa argumen = cari sendiri
+                    *.seb di ~/Downloads dan ~/Desktop.
+                    Hasil ke <nama>.bypass.seb (asli tidak diubah).
   --no-repair       Jangan perbaiki kunci yang salah, cuma laporkan
   --verify-only     Lewati install SEB, cuma verifikasi status
   -h, --help        Tampilkan bantuan ini
@@ -80,6 +88,12 @@ while [ $# -gt 0 ]; do
     case "$1" in
         --dmg)        ARG_DMG="${2:-}"; shift 2 ;;
         --config)     ARG_CONFIG="${2:-}"; shift 2 ;;
+        --patch-exam)
+            if [ $# -ge 2 ] && [ "${2#-}" = "$2" ] && [ -n "${2:-}" ]; then
+                ARG_PATCH_EXAM="$2"; shift 2
+            else
+                ARG_PATCH_EXAM="__AUTO__"; shift
+            fi ;;
         --brew)       MODE_DMG=0; shift ;;
         --system)     MODE_SYSTEM=1; shift ;;
         --no-repair)  ALLOW_REPAIR=0; shift ;;
@@ -707,6 +721,78 @@ for k in enableEsc enableCtrlEsc enableAltEsc allowQuit \
 done
 
 # ------------------------------------------------------------
+# 5b/5 - Patch config ujian  (opsional, lewat --patch-exam)
+# ------------------------------------------------------------
+# Di macOS config ujian MENANG atas client settings, dan config ujian-lah
+# yang membawa daftar prohibitedProcesses. Tanpa langkah ini, daftar itu
+# tetap berlaku dan SEB menampilkan "Prohibited Processes Are Running",
+# seberapa pun benar client settings yang sudah dipasang di atas.
+if [ -n "$ARG_PATCH_EXAM" ]; then
+    step "Patch config ujian"
+
+    EDITOR_PY=""
+    for cand in "./seb_patch_exam.py" "$PWD/seb_patch_exam.py"; do
+        if [ -f "$cand" ]; then EDITOR_PY="$cand"; break; fi
+    done
+    if [ -z "$EDITOR_PY" ]; then
+        EDITOR_PY="$(mktemp "${TMPDIR:-/tmp}/seb_patch_exam.XXXXXX")"
+        info "mengunduh seb_patch_exam.py dari repo..."
+        if curl -fsSL --retry 3 --connect-timeout 20 \
+                "${REPO_RAW}/seb_patch_exam.py" -o "$EDITOR_PY"; then
+            ok "editor terunduh"
+        else
+            err "gagal mengunduh editor - langkah ini dilewati"
+            EDITOR_PY=""
+        fi
+    else
+        info "memakai editor lokal: ${EDITOR_PY}"
+    fi
+
+    PY_BIN=""
+    for c in /usr/bin/python3 python3; do
+        if command -v "$c" >/dev/null 2>&1; then PY_BIN="$c"; break; fi
+    done
+    [ -n "$PY_BIN" ] || err "python3 tidak ditemukan - langkah ini dilewati"
+
+    if [ -n "$EDITOR_PY" ] && [ -n "$PY_BIN" ]; then
+        TARGETS=""
+        if [ "$ARG_PATCH_EXAM" = "__AUTO__" ]; then
+            info "mencari config ujian (*.seb) di ~/Downloads dan ~/Desktop"
+            for d in "$HOME/Downloads" "$HOME/Desktop"; do
+                [ -d "$d" ] || continue
+                for f in "$d"/*.seb; do
+                    [ -f "$f" ] || continue
+                    case "$f" in
+                        *unlocked*|*bypass*|*.bak*|*SebClientSettings*) continue ;;
+                    esac
+                    TARGETS="${TARGETS}${f}
+"
+                done
+            done
+            [ -n "$TARGETS" ] || warn "tidak ada config ujian yang ditemukan"
+        elif [ -f "$ARG_PATCH_EXAM" ]; then
+            TARGETS="$ARG_PATCH_EXAM"
+        else
+            err "file tidak ditemukan: $ARG_PATCH_EXAM"
+        fi
+
+        # newline di akhir WAJIB: tanpa itu `read` mengembalikan non-zero pada
+        # baris terakhir dan seluruh loop dilewati tanpa pesan apa pun.
+        printf '%s\n' "$TARGETS" | while IFS= read -r f; do
+            [ -n "$f" ] || continue
+            out="${f%.seb}.bypass.seb"
+            info "memproses: $(basename "$f")"
+            if "$PY_BIN" "$EDITOR_PY" "$f" "$out" >/dev/null 2>&1; then
+                ok "  -> $(basename "$out")"
+            else
+                warn "  gagal memproses $(basename "$f")"
+            fi
+        done
+        info "config asli TIDAK diubah. Buka file .bypass.seb itu di SEB."
+    fi
+fi
+
+# ------------------------------------------------------------
 # Hasil
 # ------------------------------------------------------------
 echo ""
@@ -782,6 +868,14 @@ fi
 # ------------------------------------------------------------
 # Troubleshooting
 # ------------------------------------------------------------
+echo "  Config ujian (macOS) - PENTING:"
+    echo "   Config ujian MENANG atas client settings di atas. Kalau SEB"
+    echo "   masih menampilkan 'Prohibited Processes Are Running', patch"
+    echo "   juga file .seb ujiannya:"
+    echo "     bash $0 --verify-only --patch-exam /path/ke/config-ujian.seb"
+    echo "   Tanpa argumen, ia mencari sendiri *.seb di ~/Downloads."
+    echo "   Hasil ditulis ke <nama>.bypass.seb - file asli tidak diubah."
+    echo ""
 echo "  Troubleshooting:"
 echo "   - 'bad CPU type'          : DMG 3.7.1 universal (x86_64+arm64)"
 echo "   - Cmd+Tab tetap terkunci  : lockdownModePolicy harus 1;"
