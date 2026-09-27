@@ -49,7 +49,7 @@ SYSTEM_PREF="${SYSTEM_PREF_DIR}/${CONFIG_NAME}"
 MODE_DMG=1          # 1 = DMG resmi (default), 0 = paksa brew cask
 MODE_SYSTEM=0       # 1 = pasang juga di /Library/Preferences (sudo)
 ALLOW_REPAIR=1      # 1 = perbaiki kunci yang salah otomatis
-VERIFY_ONLY=0       # 1 = cuma cek, tidak mengubah apa pun
+VERIFY_ONLY=0       # 1 = lewati install, cuma verifikasi status
 ARG_DMG=""
 ARG_CONFIG=""
 
@@ -66,7 +66,7 @@ Opsi:
                     Dipakai kalau SEB tetap terkunci padahal config
                     user sudah benar - config sistem menimpanya.
   --no-repair       Jangan perbaiki kunci yang salah, cuma laporkan
-  --verify-only     Hanya verifikasi, tidak mengubah apa pun
+  --verify-only     Lewati install SEB, cuma verifikasi status
   -h, --help        Tampilkan bantuan ini
 
 Contoh:
@@ -265,7 +265,10 @@ elif [ "$MODE_DMG" -eq 1 ]; then
     fi
 fi
 
-if [ "$MODE_DMG" -eq 0 ]; then
+if [ "$VERIFY_ONLY" -eq 1 ]; then
+    ok "Mode --verify-only: tahap install SEB dilewati."
+    info "Tidak ada perubahan pada sistem. Lanjut ke verifikasi."
+elif [ "$MODE_DMG" -eq 0 ]; then
     step "2b/5 - Jalur Homebrew cask"
     BREW=""
     if command -v brew >/dev/null 2>&1; then
@@ -326,7 +329,13 @@ elif [ -n "$APP_SRC" ]; then
     rm -f "$APP_SRC" 2>/dev/null || true
 fi
 
-[ -d "$SEB_APP" ] || die "SEB app tidak ada di /Applications"
+if [ ! -d "$SEB_APP" ]; then
+    if [ "$VERIFY_ONLY" -eq 1 ]; then
+        warn "SEB app tidak ada di /Applications"
+    else
+        die "SEB app tidak ada di /Applications"
+    fi
+fi
 
 INSTALLED_VER="$(defaults read "${SEB_APP}/Contents/Info.plist" \
                   CFBundleShortVersionString 2>/dev/null || echo '?')"
