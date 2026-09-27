@@ -52,7 +52,6 @@ ALLOW_REPAIR=1      # 1 = perbaiki kunci yang salah otomatis
 VERIFY_ONLY=0       # 1 = lewati install, cuma verifikasi status
 ARG_DMG=""
 ARG_CONFIG=""
-ARG_PATCH_APP=0        # 1 = patch biner SEB (daftar proses terlarang)
 ARG_PATCH_EXAM=""     # "" = tidak dipakai; "__AUTO__" = cari sendiri di ~/Downloads
 
 usage() {
@@ -74,13 +73,13 @@ Opsi:
                     ujian tetap berlaku. Tanpa argumen = cari sendiri
                     *.seb di ~/Downloads dan ~/Desktop.
                     Hasil ke <nama>.bypass.seb (asli tidak diubah).
-  --patch-app       Patch BINER SEB: tiga method ObjC di slice arm64
-                    dijadikan no-op (ret), sehingga daftar proses
-                    terlarang tidak pernah berlaku - termasuk 101 entri
-                    preset DAN aplikasi ber-izin Accessibility yang
-                    disuntik saat runtime. Config apa pun otomatis lolos.
-                    Biner asli dibackup ke <app>.original, lalu di-re-sign
-                    ad-hoc. Membutuhkan sudo (menulis ke /Applications).
+  (tidak ada --patch-app: PATCH BINER TIDAK DIPAKAI DI macOS)
+                    SEB 3.7.1 memvalidasi signature binernya sendiri.
+                    Begitu biner diubah dan di-re-sign ad-hoc, SEB
+                    mengunci diri dengan "Unauthorized SEB version was
+                    detected!". Signature vendor (TeamIdentifier
+                    6F38DNSC7X) tidak bisa dipalsukan. Di macOS bypass
+                    MEMANG lewat config - pakai --patch-exam + --system.
   --no-repair       Jangan perbaiki kunci yang salah, cuma laporkan
   --verify-only     Lewati install SEB, cuma verifikasi status
   -h, --help        Tampilkan bantuan ini
@@ -96,7 +95,6 @@ while [ $# -gt 0 ]; do
     case "$1" in
         --dmg)        ARG_DMG="${2:-}"; shift 2 ;;
         --config)     ARG_CONFIG="${2:-}"; shift 2 ;;
-        --patch-app)  ARG_PATCH_APP=1; shift ;;
         --patch-exam)
             if [ $# -ge 2 ] && [ "${2#-}" = "$2" ] && [ -n "${2:-}" ]; then
                 ARG_PATCH_EXAM="$2"; shift 2
@@ -803,70 +801,6 @@ if [ -n "$ARG_PATCH_EXAM" ]; then
             fi
         done
         info "config asli TIDAK diubah. Buka file .bypass.seb itu di SEB."
-    fi
-fi
-
-# ------------------------------------------------------------
-# 5c/5 - Patch BINER SEB  (opsional, lewat --patch-app)
-# ------------------------------------------------------------
-# Ini yang membuat bypass tidak bergantung pada config sama sekali.
-# Tiga method ObjC di slice arm64 dijadikan no-op:
-#   addAccessibilityAppsToProhibitedApplicationsList:
-#   terminateRunningAccessibilityProhibitedApps
-#   terminateApplications:processes:starting:restarting:callback:selector:
-# Ketiganya bertipe void, jadi prolog-nya diganti `ret`.
-if [ "$ARG_PATCH_APP" -eq 1 ]; then
-    step "Patch biner SEB"
-
-    PATCHER=""
-    for cand in "./seb_patch_app.py" "$PWD/seb_patch_app.py"; do
-        if [ -f "$cand" ]; then PATCHER="$cand"; break; fi
-    done
-    if [ -z "$PATCHER" ]; then
-        PATCHER="$(mktemp "${TMPDIR:-/tmp}/seb_patch_app.XXXXXX")"
-        info "mengunduh seb_patch_app.py dari repo..."
-        if curl -fsSL --retry 3 --connect-timeout 20 \
-                "${REPO_RAW}/seb_patch_app.py" -o "$PATCHER"; then
-            ok "patcher terunduh"
-        else
-            err "gagal mengunduh patcher - langkah ini dilewati"
-            PATCHER=""
-        fi
-    else
-        info "memakai patcher lokal: ${PATCHER}"
-    fi
-
-    if [ -n "$PATCHER" ] && [ -d "$SEB_APP" ]; then
-        if [ -w /Applications ]; then SUDO=""; else SUDO="sudo"; fi
-
-        if [ ! -d "${SEB_APP}.original" ]; then
-            info "backup biner asli (butuh ${SUDO:-hak tulis})..."
-            $SUDO ditto "$SEB_APP" "${SEB_APP}.original" \
-                && ok "  ${SEB_APP}.original" || err "  backup gagal"
-        else
-            info "backup sudah ada: ${SEB_APP}.original"
-        fi
-
-        info "menutup SEB dulu (biner tidak bisa dipatch saat berjalan)..."
-        osascript -e "quit app \"Safe Exam Browser\"" >/dev/null 2>&1 || true
-        sleep 2
-        pkill -f "Safe Exam Browser" >/dev/null 2>&1 || true
-        sleep 2
-
-        if "$PY_BIN" "$PATCHER" "$SEB_APP"; then
-            ok "biner dipatch"
-        else
-            err "patcher gagal - biner TIDAK diubah"
-        fi
-
-        info "re-sign ad-hoc (signature asli hilang setelah patch)..."
-        if $SUDO codesign --force --deep --sign - --timestamp=none "$SEB_APP" 2>/dev/null; then
-            ok "signature ad-hoc terpasang"
-            $SUDO codesign --verify --verbose=1 "$SEB_APP" 2>&1 | tail -1 | sed "s/^/      /"
-        else
-            err "re-sign GAGAL - SEB tidak akan mau dibuka. Pulihkan dengan:"
-            info "  sudo rm -rf \"$SEB_APP\" && sudo mv \"${SEB_APP}.original\" \"$SEB_APP\""
-        fi
     fi
 fi
 
