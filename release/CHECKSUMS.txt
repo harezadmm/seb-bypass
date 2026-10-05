@@ -1,0 +1,22 @@
+# Checksums (SHA-256)
+# dibuat: 2026-10-05 23:59:59 WIB
+
+## windows/
+3b0fb393d43175bf23fba45eef8386a12c2ee94d6c0d0dded3ba297e98a522bf  SEB Config Bypass Studio.exe
+d299c56c43f54ba784c9a0410669e81ca78b826de83b50183e1cd0b22a9b62a1  seb_bypass_gui.py
+
+## macos/
+25606a6df0976ff220107c1299924be8a355a1568950e3f9e1cd75a127972296  SEB Config Bypass Studio.app.zip
+97ce36fac35a8667df65c9c176d09953fcb9b7e4fb76f28a80a7106ac2f0fd54  SEB Config Bypass Studio.dmg
+d299c56c43f54ba784c9a0410669e81ca78b826de83b50183e1cd0b22a9b62a1  seb_bypass_gui.py
+
+## config/
+f6c67a7dcbdaef637790b347366bb90ed1ea48c18621279cd65cb13b0fb56e5e  SebClientSettings.seb
+26e02959097caacb22c2add3fb9cd461549ad0443d1884f5a8e824aa8f1a26f6  confignew.bypass.salt-preserved.seb
+87288f0e16ed1e50651a91044a6ab958ef639a11967a8ed3ab6d1344092764d1  confignew.bypass.seb
+
+## patches/
+20e9e96ff692685baacb5fe12aab610597f220a3111cb2a511b0d2f41385664f  seb3.10.2_final_patch.zip
+6e02bf60dd0a92df52e39a0e74aa2f23946163fdb66e48ee7219bd6b1c0c6e0a  seb3.10.2_integrity_patched.zip
+68c1bfc08e9d934f46e63fcf65a1091a284d3071090ebca321bcdbca512cde32  seb_integrity_fix.zip
+
