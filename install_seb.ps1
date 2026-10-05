@@ -1,9 +1,15 @@
 #Requires -Version 5.1
 <#
     ============================================================
-     Safe Exam Browser 3.10.2 - Automated Windows Setup
+     Safe Exam Browser 3.10.2 (Patch v4 — integrity lock fix, 2026-10-05) - Automated Windows Setup
     ============================================================
      Jalankan sebagai Administrator.
+
+     FIX v4: layar lock yang muncul di menit 10-15 sudah ditangani.
+     SEB 3.10.2 memverifikasi tanda tangan binernya sendiri setiap ~10 menit
+     (ScheduleIntegrityVerification) dan mengunci karena binary patch tidak
+     bertanda tangan. Installer sekarang memasang fix integrity (Tahap 4b/5)
+     yang menonaktifkan jalur lock itu. Tanpa langkah ini lock SELALU muncul.
 
      Cepat:
        powershell -NoProfile -ExecutionPolicy Bypass -File .\install_seb.ps1
@@ -55,6 +61,27 @@ $PATCH_URL_BASE     = 'https://raw.githubusercontent.com/harezadmm/seb-bypass/ma
 $PATCH_URL_FALLBACK = 'https://github.com/harezadmm/seb-bypass/raw/main/seb3.10.2_final_patch.zip'
 $MIN_ZIP_BYTES      = 100KB
 $MIN_EXE_BYTES      = 1MB
+
+# --- FIX integrity lock (layar lock 10-15 menit) -----------------------------
+# SEB 3.10.2 memverifikasi tanda tangan Authenticode binernya SENDIRI saat
+# berjalan, berulang tiap ~10 menit + acak 0-5 menit:
+#   ScheduleIntegrityVerification -> VerifyApplicationIntegrity
+#     -> IntegrityModule.TryVerifyRuntimeIntegrity -> HandleApplicationIntegrityStatus
+#       -> "Application integrity is compromised!" -> LOCK SCREEN
+# Binary hasil patch tidak bertanda tangan, jadi verifikasi selalu GAGAL dan
+# lock muncul di menit 10-15. Artefak di bawah berisi 3 binary dengan method
+# integrity di-nonaktifkan (IL ditulis ulang: handler void -> ret, verifier
+# bool -> ldc.i4.1; ret). Ukuran body tetap, header method tidak digeser.
+#
+# CATATAN: patch_integrity_lock.py (versi lama) TIDAK bisa memperbaiki ini -
+# heuristiknya mencari nama method sebagai ASCII/UTF-16 (padahal .NET memakai
+# UTF-8 di heap #Strings) dan konstanta opcode-nya salah semua. Terbukti
+# 0 method dipatch. Artefak ini dibangun dengan seb_fix_integrity_lock.py
+# (parser metadata ECMA-335 yang benar).
+$INTEGRITY_FIX_URL_BASE = 'https://raw.githubusercontent.com/harezadmm/seb-bypass/main/seb_integrity_fix.zip'
+$INTEGRITY_FIX_FALLBACK = 'https://github.com/harezadmm/seb-bypass/raw/main/seb_integrity_fix.zip'
+# TOFU, sama seperti $EXPECTED_PATCH_SHA256: jangkar terhadap isi repo ini.
+$INTEGRITY_FIX_SHA256   = '0DB7E0306B334D700D2C6EA909071B024D46F15D386494BB3E413B7DE5C67FEC'
 
 # Sumber utama installer: asset rilis resmi ETH Zurich. URL ini mengarah ke berkas
 # yang PERSIS sama dengan $EXPECTED_SETUP_SHA256 di bawah, jadi integritasnya
@@ -757,6 +784,107 @@ function Get-PatchArchive {
     throw 'Semua sumber download patch gagal.'
 }
 
+# ============================================================
+# FIX INTEGRITY LOCK (layar lock 10-15 menit)
+# ============================================================
+function Get-IntegrityFixArchive {
+    param([Parameter(Mandatory)][string] $OutPath)
+
+    if (Test-Path -LiteralPath $OutPath) { Remove-Item -LiteralPath $OutPath -Force }
+
+    $tick = (Get-Date).Ticks
+    $urls = @("${INTEGRITY_FIX_URL_BASE}?t=$tick", "${INTEGRITY_FIX_FALLBACK}?t=$tick")
+
+    foreach ($url in $urls) {
+        try {
+            Write-Log "  sumber: $(($url -split '\?')[0])"
+            [void](Save-RemoteFile -Uri $url -OutPath $OutPath)
+
+            if (Test-ZipArchive -Path $OutPath) {
+                Write-Log ("  fix integrity terunduh ({0:N0} bytes)" -f (Get-Item -LiteralPath $OutPath).Length) 'OK'
+                return
+            }
+
+            Write-Log '  hasil bukan arsip zip yang valid, coba sumber lain...' 'WARN'
+        } catch {
+            Write-Log "  gagal: $($_.Exception.Message)" 'WARN'
+        }
+    }
+
+    throw 'Semua sumber download fix integrity gagal.'
+}
+
+function Install-IntegrityFix {
+    # Memasang 3 binary fix setelah patch utama. Mengembalikan $true jika ketiganya
+    # terpasang dengan hash yang cocok. Menutup jalur:
+    #   -[IntegrityResponsibility HandleApplicationIntegrityStatus]  (lock)
+    #   -[IntegrityResponsibility HandleSessionIntegrityStatus]
+    #   -[IntegrityResponsibility HandleRuntimeIntegrityStatus]
+    #   -[IntegrityResponsibility ScheduleIntegrityVerification]     (timer 10 menit)
+    #   -[IntegrityResponsibility StartIntegrityMonitoring]
+    #   -[IntegrityModule TryVerifyCodeSignature]                    (verifier)
+    #   -[IntegrityModule TryVerifyRuntimeIntegrity]
+    #   -[IntegrityModule TryVerifySessionIntegrity]
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][string] $ZipPath,
+        [Parameter(Mandatory)][string] $TempFolder
+    )
+
+    $files = @(
+        'SafeExamBrowser.exe'
+        'SafeExamBrowser.Client.exe'
+        'SafeExamBrowser.Configuration.dll'
+    )
+
+    if (Test-Path -LiteralPath $TempFolder) {
+        Remove-Item -LiteralPath $TempFolder -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    Expand-Archive -LiteralPath $ZipPath -DestinationPath $TempFolder -Force
+
+    Stop-SebEverything
+
+    $maxWait = 30; $waited = 0
+    while ($waited -lt $maxWait) {
+        $locked = $false
+        foreach ($f in $files) {
+            if (-not (Test-FileUnlocked -Path (Join-Path $DEST $f))) { $locked = $true; break }
+        }
+        if (-not $locked) { break }
+        Start-Sleep -Seconds 1
+        $waited++
+        if ($waited % 10 -eq 0) { Stop-SebEverything }
+    }
+    if ($waited -ge $maxWait) {
+        Write-Log '  sebagian file masih terkunci, salinan mungkin gagal.' 'WARN'
+    }
+
+    $ok = 0
+    foreach ($f in $files) {
+        $src = Join-Path $TempFolder $f
+        $dst = Join-Path $DEST $f
+        if (-not (Test-Path -LiteralPath $src)) {
+            Write-Log "  LEWATI $f (tidak ada di arsip fix)" 'WARN'
+            continue
+        }
+        try {
+            Copy-Item -LiteralPath $src -Destination $dst -Force -ErrorAction Stop
+            $a = (Get-FileHash -LiteralPath $src -Algorithm SHA256).Hash
+            $b = (Get-FileHash -LiteralPath $dst -Algorithm SHA256).Hash
+            if ($a -eq $b) {
+                Write-Log "  fix terpasang: $f" 'OK'
+                $ok++
+            } else {
+                Write-Log "  fix GAGAL (hash beda, file terkunci?): $f" 'WARN'
+            }
+        } catch {
+            Write-Log "  fix GAGAL: $f - $($_.Exception.Message)" 'WARN'
+        }
+    }
+
+    return ($ok -eq $files.Count)
+}
+
 function Install-Patch {
     [CmdletBinding()]
     param(
@@ -913,7 +1041,7 @@ try {
     }
 
     # --------------------------------------------------------
-    Write-Log 'Tahap 1/4 - Memindai instalasi Safe Exam Browser yang ada...' 'STEP'
+    Write-Log 'Tahap 1/5 - Memindai instalasi Safe Exam Browser yang ada...' 'STEP'
     # --------------------------------------------------------
     $existing = @(Get-InstalledSeb)
 
@@ -942,7 +1070,7 @@ try {
     }
 
     # --------------------------------------------------------
-    Write-Log 'Tahap 2/4 - Menyiapkan Safe Exam Browser...' 'STEP'
+    Write-Log 'Tahap 2/5 - Menyiapkan Safe Exam Browser...' 'STEP'
     # --------------------------------------------------------
     if ($versionOk -and -not $ForceReinstall) {
         Write-Log "  versi $TARGET_VERSION sudah terpasang, instalasi dilewati." 'OK'
@@ -1001,7 +1129,7 @@ try {
     }
 
     # --------------------------------------------------------
-    Write-Log 'Tahap 3/4 - Mengunduh patch bypass...' 'STEP'
+    Write-Log 'Tahap 3/5 - Mengunduh patch bypass...' 'STEP'
     # --------------------------------------------------------
     $patchZip    = Join-Path $env:TEMP 'seb_patch.zip'
     $patchFolder = Join-Path $env:TEMP 'seb_patch_extracted'
@@ -1010,9 +1138,30 @@ try {
     Assert-FileHash -Path $patchZip -Expected $EXPECTED_PATCH_SHA256 -Label 'patch zip'
 
     # --------------------------------------------------------
-    Write-Log 'Tahap 4/4 - Memasang patch...' 'STEP'
+    Write-Log 'Tahap 4/5 - Memasang patch...' 'STEP'
     # --------------------------------------------------------
     $patchReport = Install-Patch -ZipPath $patchZip -TempFolder $patchFolder
+
+    # --------------------------------------------------------
+    Write-Log 'Tahap 4b/5 - Menutup integrity lock (layar lock 10-15 menit)...' 'STEP'
+    # --------------------------------------------------------
+    # WAJIB. Tanpa langkah ini SEB mengunci sendiri 10-15 menit setelah mulai:
+    # binary patch tidak bertanda tangan, verifikasi Authenticode internal gagal,
+    # lalu "Application integrity is compromised!" memanggil lock screen.
+    # Sebelumnya ini TIDAK pernah tertangani (patch_integrity_lock.py tidak
+    # berfungsi: 0 method dipatch).
+    $fixZip    = Join-Path $env:TEMP 'seb_integrity_fix.zip'
+    $fixFolder = Join-Path $env:TEMP 'seb_integrity_fix_extracted'
+    $integrityOk = $false
+
+    try {
+        Get-IntegrityFixArchive -OutPath $fixZip
+        Assert-FileHash -Path $fixZip -Expected $INTEGRITY_FIX_SHA256 -Label 'fix integrity zip'
+        $integrityOk = Install-IntegrityFix -ZipPath $fixZip -TempFolder $fixFolder
+    } catch {
+        Write-Log "  fix integrity GAGAL dipasang: $($_.Exception.Message)" 'WARN'
+        Write-Log '  SEB akan tetap mengunci sendiri di menit 10-15.' 'WARN'
+    }
 
     $serviceOk = Start-SebService
 
@@ -1021,6 +1170,8 @@ try {
     # --------------------------------------------------------
     Remove-Item -LiteralPath $patchZip    -Force -ErrorAction SilentlyContinue
     Remove-Item -LiteralPath $patchFolder -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath $fixZip      -Force -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath $fixFolder   -Recurse -Force -ErrorAction SilentlyContinue
 
     # --------------------------------------------------------
     # RINGKASAN
@@ -1037,6 +1188,7 @@ try {
     Write-Host ('  {0,-32} {1}' -f 'Versi SEB terpasang:', $(if ($finalOk) { "$TARGET_VERSION OK" } else { 'TIDAK TERDETEKSI' }))
     Write-Host ('  {0,-32} {1}' -f 'Service berjalan:', $(if ($serviceOk) { 'YA' } else { 'TIDAK' }))
     Write-Host ('  {0,-32} {1}' -f 'Patch terpasang:', $(if ($allPatched) { 'LENGKAP' } else { 'SEBAGIAN' }))
+    Write-Host ('  {0,-32} {1}' -f 'Fix integrity lock:', $(if ($integrityOk) { 'AKTIF (tidak lock di menit 10-15)' } else { 'TIDAK AKTIF' })) -ForegroundColor $(if ($integrityOk) { 'Gray' } else { 'Red' })
 
     if ($script:Warnings.Count -gt 0) {
         Write-Host ''
@@ -1047,7 +1199,7 @@ try {
     Show-ActualFileState
 
     Write-Host ''
-    if ($finalOk -and $allPatched) {
+    if ($finalOk -and $allPatched -and $integrityOk) {
         Write-Host ('=' * 62) -ForegroundColor Green
         Write-Host '  SUKSES - Safe Exam Browser 3.10.2 + patch terpasang.' -ForegroundColor Green
         Write-Host ('=' * 62) -ForegroundColor Green
@@ -1060,6 +1212,16 @@ try {
         Write-Host '    [+] Tombol navigasi browser aktif' -ForegroundColor Gray
         Write-Host '    [+] Alt+Tab UNLOCK (Windows Task Switcher)' -ForegroundColor Gray
         Write-Host '    [+] Tombol power / shutdown di taskbar aktif' -ForegroundColor Gray
+        Write-Host ''
+        Write-Host '  FIX layar lock 10-15 menit:' -ForegroundColor Cyan
+        if ($integrityOk) {
+            Write-Host '    [+] Integrity lock DIMATIKAN' -ForegroundColor Gray
+            Write-Host '        (SEB tidak lagi memverifikasi tanda tangan binernya' -ForegroundColor DarkGray
+            Write-Host '         sendiri; dulu lock muncul di menit 10-15)' -ForegroundColor DarkGray
+        } else {
+            Write-Host '    [!] Integrity lock TIDAK aktif - SEB bisa lock di menit 10-15' -ForegroundColor Yellow
+            Write-Host '        Jalankan ulang installer, atau cek koneksi ke GitHub.' -ForegroundColor Yellow
+        }
         Write-Host ''
         Abort -Code 0
     }
