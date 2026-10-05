@@ -49,7 +49,7 @@ if (-not (Test-Path (Join-Path $Here 'assets\sebstudio.ico'))) {
 # 4) build
 Write-Host '==> pyinstaller...'
 Remove-Item -Recurse -Force (Join-Path $Here 'dist'), (Join-Path $Here 'build') -ErrorAction SilentlyContinue
-& $VenvPy -m PyInstaller --clean --noconfirm (Join-Path $Here 'seb_bypass_gui.spec')
+& $VenvPy -m PyInstaller --clean --noconfirm (Join-Path $Here 'seb_bypass_gui_onefile.spec')
 
 $Exe = Join-Path $Here 'dist\SEB Config Bypass Studio.exe'
 if (-not (Test-Path $Exe)) {

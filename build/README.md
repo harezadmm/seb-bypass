@@ -55,8 +55,12 @@ cd build
 powershell -ExecutionPolicy Bypass -File build_windows.ps1
 ```
 
-Menghasilkan: `build\dist\SEB Config Bypass Studio.exe` (~25–30 MB, satu file,
-tanpa jendela konsol).
+Menghasilkan: `build\dist\SEB Config Bypass Studio.exe` (**satu file ~12 MB**,
+tanpa jendela konsol). Memakai `seb_bypass_gui_onefile.spec` sehingga tidak
+perlu folder pendamping — cukup satu `.exe` yang bisa dipindah ke mana saja.
+
+Sudah dibangun & diuji di Windows 11 x64 (Python 3.13 + PyInstaller 6.22.3):
+smoke test exit 0, output 213 kunci dengan seluruh nilai bypass tepat.
 
 File `.exe` bisa dipindah ke PC mana pun — **tidak butuh Python terpasang**.
 
@@ -133,8 +137,9 @@ python make_icon.py     # butuh pillow
 
 ```
 build/
-├── ci/build.yml            workflow GitHub Actions (salin ke .github/workflows/)
-├── seb_bypass_gui.spec     spec PyInstaller (dipakai kedua platform)
+├── ci/build.yml                    workflow GitHub Actions (salin ke .github/workflows/)
+├── seb_bypass_gui.spec             spec PyInstaller - macOS (onedir + .app)
+├── seb_bypass_gui_onefile.spec     spec PyInstaller - Windows (satu file .exe)
 ├── build_mac.sh            build macOS
 ├── build_windows.ps1       build Windows
 ├── make_icon.py            pembuat ikon

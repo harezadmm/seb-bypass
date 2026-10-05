@@ -14,3 +14,8 @@ build/*.dmg
 build/*.exe
 build/__pycache__/
 build/sebstudio.iconset/
+
+# .exe hasil build (di-upload sebagai GitHub Release, bukan di git)
+dist-windows/
+build/dist/
+build/*.dmg

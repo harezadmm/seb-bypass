@@ -37,7 +37,7 @@ jobs:
 
       - name: Build .exe
         working-directory: build
-        run: pyinstaller --clean --noconfirm seb_bypass_gui.spec
+        run: pyinstaller --clean --noconfirm seb_bypass_gui_onefile.spec
 
       - name: Smoke test (headless)
         working-directory: build
