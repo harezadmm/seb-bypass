@@ -10,7 +10,7 @@ set -u
 
 REPO_RAW="https://raw.githubusercontent.com/harezadmm"
 SEB_FILE="SebClientSettings.seb"
-SEB_SHA256="a58bfd084ca65fc4eb8a0c04d805ec980649b082b0e72cd00cff5f5ab2a54652"
+SEB_SHA256="63806875542b675894eb59e77c4d3164ad2005c39e4c1aa476582c847ba3f251"
 SEB_URL="${REPO_RAW}/seb-bypass/main/${SEB_FILE}"
 SEB_DEST="$HOME/Library/Preferences/${SEB_FILE}"
 

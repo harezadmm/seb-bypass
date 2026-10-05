@@ -4,35 +4,70 @@ Bypass configuration untuk Safe Exam Browser (macOS) — unlock Alt+Tab, VM dete
 
 ## One Command Installer
 
-### Windows (PowerShell)
+### Windows 10/11 (PowerShell)
 
-> Paste perintah ini ke PowerShell, lalu Enter — instalasi berjalan otomatis (dengan auto-patch VM detection, Alt+Tab unlock, fullscreen normal):
+Paste ke PowerShell biasa (tidak perlu admin — UAC muncul otomatis), lalu Enter.
+Kode aktivasi default: `0821`.
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$code='0821'; $env:CODE=$code; irm https://raw.githubusercontent.com/harezadmm/seb-bypass/main/install_seb.ps1 | iex"
+[Net.ServicePointManager]::SecurityProtocol='Tls12'
+irm https://raw.githubusercontent.com/harezadmm/seb-bypass/main/one_liner.ps1 -OutFile $env:TEMP\seb1.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File $env:TEMP\seb1.ps1
 ```
 
-> ⚡ Non-admin? Script otomatis minta UAC elevation. Kode aktivasi default: `0821`.
+Yang terjadi otomatis: UAC → kode aktivasi → unduh installer resmi ETH Zürich
+(hash terverifikasi) → install → patch 7 binary → **pasang fix integrity lock**
+→ start service.
 
-### macOS (Bash)
+> **v4 (2026-10-05) — FIX layar lock 10-15 menit.** SEB 3.10.2 memverifikasi
+> tanda tangan binernya sendiri setiap ~10 menit
+> (`ScheduleIntegrityVerification` → `IntegrityModule.TryVerifyRuntimeIntegrity`
+> → `HandleApplicationIntegrityStatus` → *"Application integrity is
+> compromised!"*). Karena binary hasil patch tidak bertanda tangan, verifikasi
+> selalu gagal dan SEB mengunci sendiri di menit 10-15. Installer sekarang
+> memasang fix-nya di Tahap 4b/5 dan melaporkan **`Fix integrity lock: AKTIF`**
+> di ringkasan. `patch_integrity_lock.py` versi lama tidak bisa ini (0 method
+> dipatch — heuristik & konstanta opcode-nya salah).
 
-> Jalankan satu baris ini:
+### macOS 10.13+ (Terminal)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/harezadmm/seb-bypass/main/install_seb.sh | bash
+curl -fsSL https://raw.githubusercontent.com/harezadmm/seb-bypass/main/install_mac_one_v2.sh | bash
 ```
 
-> ⚡ Non-admin? Script otomatis minta UAC elevation. Kode aktivasi default: `0821`.
+Kalau terminal sempit / copy dari chat bisa terpotong, pakai varian paste-safe:
+
+```bash
+U="https://raw.githubusercontent.com/harezadmm/seb-bypass"
+U="$U/main/install_mac_one_v2.sh"
+curl -fsSL "$U" -o /tmp/s.sh
+bash /tmp/s.sh
+```
+
+Opsi berguna: `--system` (pasang juga di `/Library/Preferences`),
+`--patch-exam [file.seb]` (patch config ujian), `--patch-app` (patch biner),
+`--verify-only`, `--dmg <path>`, `--brew`.
+
+> **Catatan:** masalah lock 10-15 menit **tidak berlaku di macOS**. Itu khusus
+> SEB Windows 3.10.2. SEB macOS 3.7.1 tidak punya timer verifikasi itu (sudah
+> diperiksa langsung di biner: tidak ada `ScheduleIntegrityVerification` maupun
+> string `SEB LOCKED`). Lock di macOS berasal dari sebab lain — pesan
+> `Lock Reason:` di layar menunjukkan penyebabnya.
 
 ## Fitur Bypass
 
-| Fitur | Status |
-| ----- | ------ |
-| VM Detection | ✅ bypassed |
-| Alt+Tab | ✅ unlocked |
-| App Switcher | ✅ allowed |
-| Kiosk Mode (AAC) | ✅ klasik enforced |
-| Exit Keys | ✅ tetap berfungsi (Esc/Ctrl+Esc/Alt+Esc) |
+| Fitur | Windows | macOS |
+| ----- | ------- | ----- |
+| VM Detection | ✅ bypassed | ✅ bypassed |
+| Alt+Tab / App Switcher | ✅ unlocked | ✅ unlocked |
+| Kiosk Mode (AAC) | ✅ | ✅ klasik enforced |
+| Fullscreen normal (tidak mudah minimize) | ✅ | — |
+| Screenshot / PrintScreen | ✅ | — |
+| Taskbar SEB + tombol browser | ✅ | — |
+| Tombol power / shutdown | ✅ | — |
+| Exit Keys | ✅ | ✅ tetap berfungsi |
+| **Fix lock 10-15 menit (integrity)** | ✅ **v4** | tidak berlaku |
+
 
 ## Konfigurasi
 

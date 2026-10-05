@@ -20,7 +20,7 @@ set -u
 REPO_RAW="https://raw.githubusercontent.com/harezadmm/seb-bypass/main"
 
 CONFIG_NAME="SebClientSettings.seb"
-CONFIG_SHA256="a58bfd084ca65fc4eb8a0c04d805ec980649b082b0e72cd00cff5f5ab2a54652"
+CONFIG_SHA256="63806875542b675894eb59e77c4d3164ad2005c39e4c1aa476582c847ba3f251"
 CONFIG_URL="${REPO_RAW}/${CONFIG_NAME}"
 CONFIG_DEST="$HOME/Library/Preferences/${CONFIG_NAME}"
 
