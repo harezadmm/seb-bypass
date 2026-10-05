@@ -1,0 +1,23 @@
+source str 'D:\\Downloads_Sorted_Codex\\Folders\\SEB\\research\\seb3.10.2_decompiled'
+keys dict[217]
+   'active' -> 'Keys.Applications'
+   'allowUserToChooseApp' -> 'Keys.Applications'
+categories dict[33]
+   'Keys.Applications' -> ['active', 'allowUserToChooseApp', 'runInBackground', 'argument', 'arguments', 'autostart', 'strongKill', 'prohibitedProcesses', 'description', 'title', 'executable', 'path', 'os', 'originalName', 'iconInTaskbar', 'signature', 'permittedProcesses']
+   'Keys.Audio' -> ['audioVolumeLevel', 'audioMute', 'audioSetVolumeLevel']
+const_collisions dict[2]
+   'active' -> ['Active', 'RuleIsActive']
+   'allowScreenSharing' -> ['AllowWindowCapture', 'EnableRemoteConnections']
+dispatch dict[142]
+   'prohibitedProcesses' -> 'MapApplicationWhitelist'
+   'permittedProcesses' -> 'MapApplicationWhitelist'
+methods dict[140]
+   'MapInitialVolumeLevel' -> {'file': 'AudioDataMapper', 'prop': 'Audio.InitialVolume', 'expr': 'initialVolume', 'inverted': False}
+   'MapMuteAudio' -> {'file': 'AudioDataMapper', 'prop': 'Audio.MuteAudio', 'expr': 'muteAudio', 'inverted': False}
+global_handlers dict[2]
+   'BrowserDataMapper' -> []
+   'SecurityDataMapper' -> []
+defaults dict[149]
+   'Applications.Blacklist.ExecutableName' -> '"AA_v3.exe"'
+   'Applications.Blacklist.OriginalName' -> '"AA_v3.exe"'
+generated_at str '2026-09-27T01:50:46+00:00'

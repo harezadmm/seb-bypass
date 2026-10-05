@@ -1,0 +1,141 @@
+{
+ "ConfigurationMode": {
+  "file": "SafeExamBrowser.Settings\\SafeExamBrowser.Settings\\ConfigurationMode.cs",
+  "members": [
+   "ConfigureClient",
+   "Exam"
+  ]
+ },
+ "SessionMode": {
+  "file": "SafeExamBrowser.Settings\\SafeExamBrowser.Settings\\SessionMode.cs",
+  "members": [
+   "Normal",
+   "Server"
+  ]
+ },
+ "PopupPolicy": {
+  "file": "SafeExamBrowser.Settings\\SafeExamBrowser.Settings.Browser\\PopupPolicy.cs",
+  "members": [
+   "Allow",
+   "AllowSameHost",
+   "AllowSameHostAndWindow",
+   "AllowSameWindow",
+   "Block"
+  ]
+ },
+ "UrlPolicy": {
+  "file": "SafeExamBrowser.Settings\\SafeExamBrowser.Settings.Browser\\UrlPolicy.cs",
+  "members": [
+   "Always",
+   "BeforeTitle",
+   "LoadError",
+   "Never"
+  ]
+ },
+ "WindowPosition": {
+  "file": "SafeExamBrowser.Settings\\SafeExamBrowser.Settings.Browser\\WindowPosition.cs",
+  "members": [
+   "Left",
+   "Center",
+   "Right"
+  ]
+ },
+ "FilterResult": {
+  "file": "SafeExamBrowser.Settings\\SafeExamBrowser.Settings.Browser.Filter\\FilterResult.cs",
+  "members": [
+   "Allow",
+   "Block"
+  ]
+ },
+ "FilterRuleType": {
+  "file": "SafeExamBrowser.Settings\\SafeExamBrowser.Settings.Browser.Filter\\FilterRuleType.cs",
+  "members": [
+   "Regex",
+   "Simplified"
+  ]
+ },
+ "ProxyPolicy": {
+  "file": "SafeExamBrowser.Settings\\SafeExamBrowser.Settings.Browser.Proxy\\ProxyPolicy.cs",
+  "members": [
+   "Custom",
+   "System"
+  ]
+ },
+ "ProxyProtocol": {
+  "file": "SafeExamBrowser.Settings\\SafeExamBrowser.Settings.Browser.Proxy\\ProxyProtocol.cs",
+  "members": [
+   "Ftp",
+   "Http",
+   "Https",
+   "Socks"
+  ]
+ },
+ "LogLevel": {
+  "file": "SafeExamBrowser.Settings\\SafeExamBrowser.Settings.Logging\\LogLevel.cs",
+  "members": [
+   "Debug",
+   "Info",
+   "Warning",
+   "Error"
+  ]
+ },
+ "ImageFormat": {
+  "file": "SafeExamBrowser.Settings\\SafeExamBrowser.Settings.Proctoring\\ImageFormat.cs",
+  "members": [
+   "Bmp",
+   "Gif",
+   "Jpg",
+   "Png"
+  ]
+ },
+ "ImageQuantization": {
+  "file": "SafeExamBrowser.Settings\\SafeExamBrowser.Settings.Proctoring\\ImageQuantization.cs",
+  "members": [
+   "BlackAndWhite1bpp",
+   "Color8bpp",
+   "Color16bpp",
+   "Color24bpp",
+   "Grayscale2bpp",
+   "Grayscale4bpp",
+   "Grayscale8bpp"
+  ]
+ },
+ "ClipboardPolicy": {
+  "file": "SafeExamBrowser.Settings\\SafeExamBrowser.Settings.Security\\ClipboardPolicy.cs",
+  "members": [
+   "Allow",
+   "Block",
+   "Isolated"
+  ]
+ },
+ "KioskMode": {
+  "file": "SafeExamBrowser.Settings\\SafeExamBrowser.Settings.Security\\KioskMode.cs",
+  "members": [
+   "None",
+   "CreateNewDesktop",
+   "DisableExplorerShell"
+  ]
+ },
+ "VirtualMachinePolicy": {
+  "file": "SafeExamBrowser.Settings\\SafeExamBrowser.Settings.Security\\VirtualMachinePolicy.cs",
+  "members": [
+   "Allow",
+   "Deny"
+  ]
+ },
+ "ServicePolicy": {
+  "file": "SafeExamBrowser.Settings\\SafeExamBrowser.Settings.Service\\ServicePolicy.cs",
+  "members": [
+   "Mandatory",
+   "Optional",
+   "Warn"
+  ]
+ },
+ "UserInterfaceMode": {
+  "file": "SafeExamBrowser.Settings\\SafeExamBrowser.Settings.UserInterface\\UserInterfaceMode.cs",
+  "members": [
+   "Desktop",
+   "Mobile"
+  ]
+ }
+}

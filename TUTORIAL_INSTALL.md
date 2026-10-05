@@ -29,7 +29,9 @@ Versi: **SEB 3.10.2 (Windows)** · **SEB 3.7.1 (macOS)** · Kode aktivasi: `0821
 4. **Internet aktif** — installer + patch diunduh otomatis
 5. **Kode aktivasi: `0821`** — diminta saat proses berjalan
 
-> ⚠️ **Status Drive installer:** auto-download installer 3.10.2 dari Google Drive **belum aktif** (fileID belum diupdate). Untuk sekarang, sediakan file installer secara lokal dan pakai **Jalur 3** dengan `-InstallerPath`, atau salin installer manual ke PC target. Patch (±900 KB) selalu auto-download dari GitHub — jalur ini sudah live.
+> ✅ **Sumber installer:** script mengunduh installer dari **asset rilis resmi ETH Zürich** — `SEB_3.10.2.920_SetupBundle.exe`, 378.974.944 B, sha256 `45E463FF…`. Hash-nya cocok persis dengan acuan, terverifikasi end-to-end. **Jalur 1 dan Jalur 3 kini jalan di PC bersih tanpa menyediakan file lokal.**
+>
+> ⚠️ **Cadangan Google Drive masih salah versi.** fileID `1Rl61ZOVOPIlhWM9G9Fr7ZDOmXXd2ykb7` resolve normal dan menghasilkan PE asli — tetapi isinya **SEB 3.10.1.864** (350.934.000 B, sha256 `04CE06EF…`), sedangkan script mensyaratkan hash **3.10.2**. Selama fileID belum diupdate, unduhan Drive **selalu** ditolak di gerbang integritas. Ini bukan tautan mati — ini salah versi. Drive hanya dipakai sebagai cadangan setelah sumber resmi gagal.
 
 ---
 
@@ -126,7 +128,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\install_seb.ps1 -VerifyOnl
 | Install gagal, log `exit 1603` | Disk C: penuh (< 700 MB) | Bersihkan temp/disk, ulangi. Cek: `Get-PSDrive C` |
 | Script diam lama di "menguninstall..." | Uninstaller lama menampilkan dialog tersembunyi | Buka Task Manager → cari `SetupBundle.exe`/`msiexec` → kill → jalankan ulang. Atau uninstall SEB lama manual dari Settings → Apps dulu |
 | "hash TIDAK COCOK" | Zip/installer berubah atau korup | Jangan pakai `-SkipIntegrityCheck` — download ulang installer resmi; zip patch diambil ulang otomatis |
-| Download Drive gagal | fileID installer belum diupdate / koneksi | Pakai `-InstallerPath` dengan file lokal |
+| `hash installer SEB TIDAK COCOK` padahal unduhan sukses | fileID Drive menunjuk rilis **3.10.1** (350.934.000 B), acuan hash adalah **3.10.2** (378.974.944 B) | Biarkan script memakai sumber resmi ETH Zürich (perilaku default). Jangan pakai `-SkipIntegrityCheck`. Cek versi: `(Get-Item $env:TEMP\seb_3.10.2_setup.exe).VersionInfo.ProductVersion` |
 | Windows SmartScreen memblokir .bat | SmartScreen default | Klik "More info" → "Run anyway", atau pakai Jalur 1/3 |
 | Service tidak jalan setelah patch | File masih terkunci saat copy | Restart PC → jalankan ulang script (idempotent, aman diulang) |
 | Error "PowerShell harus dijalankan sebagai Administrator" (Jalur 3) | Lupa as admin | Klik kanan PowerShell → Run as Administrator |
@@ -262,4 +264,4 @@ A: Windows: uninstall SEB dari Settings → Apps, install ulang versi bersih. ma
 
 ---
 
-*Distribusi: patch zip & script via GitHub `harezadmm/seb-bypass`; installer Windows 3.10.2 via Google Drive (fileID menyusul); installer macOS 3.7.1 via DMG.*
+*Distribusi: patch zip & script via GitHub `harezadmm/seb-bypass`; installer Windows 3.10.2 dari asset rilis resmi ETH Zürich (cadangan: Google Drive — fileID saat ini masih menunjuk 3.10.1); installer macOS 3.7.1 via DMG.*

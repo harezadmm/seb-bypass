@@ -1,0 +1,988 @@
+{
+ "methods": {
+  "MapInitialVolumeLevel": {
+   "file": "AudioDataMapper",
+   "prop": "Audio.InitialVolume",
+   "expr": "initialVolume",
+   "inverted": false
+  },
+  "MapMuteAudio": {
+   "file": "AudioDataMapper",
+   "prop": "Audio.MuteAudio",
+   "expr": "muteAudio",
+   "inverted": false
+  },
+  "MapSetInitialVolumeLevel": {
+   "file": "AudioDataMapper",
+   "prop": "Audio.InitializeVolume",
+   "expr": "initializeVolume",
+   "inverted": false
+  },
+  "MapAllowAddressBar": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.MainWindow.AllowAddressBar",
+   "expr": "allowAddressBar",
+   "inverted": false
+  },
+  "MapAllowAddressBarAdditionalWindow": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.AdditionalWindow.AllowAddressBar",
+   "expr": "allowAddressBar",
+   "inverted": false
+  },
+  "MapAllowConfigurationDownloads": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.AllowConfigurationDownloads",
+   "expr": "allowConfigurationDownloads",
+   "inverted": false
+  },
+  "MapAllowCustomDownloadLocation": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.AllowCustomDownAndUploadLocation",
+   "expr": "allowCustomDownAndUploadLocation",
+   "inverted": false
+  },
+  "MapAllowDeveloperConsole": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.MainWindow.AllowDeveloperConsole",
+   "expr": "allowDeveloperConsole",
+   "inverted": false
+  },
+  "MapAllowDownloads": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.AllowDownloads",
+   "expr": "allowDownloads",
+   "inverted": false
+  },
+  "MapAllowFind": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.AllowFind",
+   "expr": "allowFind",
+   "inverted": false
+  },
+  "MapAllowNavigation": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.MainWindow.AllowBackwardNavigation",
+   "expr": "flag",
+   "inverted": false
+  },
+  "MapAllowNavigationAdditionalWindow": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.AdditionalWindow.AllowBackwardNavigation",
+   "expr": "flag",
+   "inverted": false
+  },
+  "MapAllowPageZoom": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.AllowPageZoom",
+   "expr": "allowPageZoom",
+   "inverted": false
+  },
+  "MapAllowPdfReaderToolbar": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.AllowPdfReaderToolbar",
+   "expr": "allowPdfReaderToolbar",
+   "inverted": false
+  },
+  "MapAllowPrint": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.AllowPrint",
+   "expr": "allowPrint",
+   "inverted": false
+  },
+  "MapAllowReload": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.MainWindow.AllowReloading",
+   "expr": "allowReloading",
+   "inverted": false
+  },
+  "MapAllowReloadAdditionalWindow": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.AdditionalWindow.AllowReloading",
+   "expr": "allowReloading",
+   "inverted": false
+  },
+  "MapAllowSpellChecking": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.AllowSpellChecking",
+   "expr": "allowSpellChecking",
+   "inverted": false
+  },
+  "MapAllowUploads": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.AllowUploads",
+   "expr": "allowUploads",
+   "inverted": false
+  },
+  "MapDeleteCacheOnShutdown": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.DeleteCacheOnShutdown",
+   "expr": "deleteCacheOnShutdown",
+   "inverted": false
+  },
+  "MapDeleteCookiesOnShutdown": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.DeleteCookiesOnShutdown",
+   "expr": "deleteCookiesOnShutdown",
+   "inverted": false
+  },
+  "MapDeleteCookiesOnStartup": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.DeleteCookiesOnStartup",
+   "expr": "deleteCookiesOnStartup",
+   "inverted": false
+  },
+  "MapDownloadDirectory": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.DownAndUploadDirectory",
+   "expr": "downAndUploadDirectory",
+   "inverted": false
+  },
+  "MapDownloadPdfFiles": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.AllowPdfReader",
+   "expr": "!flag",
+   "inverted": true
+  },
+  "MapEnableBrowser": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.EnableBrowser",
+   "expr": "enableBrowser",
+   "inverted": false
+  },
+  "MapExamKeySalt": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.BrowserExamKeySalt",
+   "expr": "browserExamKeySalt",
+   "inverted": false
+  },
+  "MapHomeButtonMessage": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.HomeNavigationMessage",
+   "expr": "homeNavigationMessage",
+   "inverted": false
+  },
+  "MapHomeButtonRequiresPassword": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.HomeNavigationRequiresPassword",
+   "expr": "homeNavigationRequiresPassword",
+   "inverted": false
+  },
+  "MapHomeButtonUrl": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.HomeUrl",
+   "expr": "homeUrl",
+   "inverted": false
+  },
+  "MapHomeButtonUseStartUrl": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.UseStartUrlAsHomeUrl",
+   "expr": "useStartUrlAsHomeUrl",
+   "inverted": false
+  },
+  "MapMainWindowMode": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.MainWindow.FullScreenMode",
+   "expr": "num == 1",
+   "inverted": false
+  },
+  "MapQuitUrl": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.QuitUrl",
+   "expr": "quitUrl",
+   "inverted": false
+  },
+  "MapQuitUrlConfirmation": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.ConfirmQuitUrl",
+   "expr": "confirmQuitUrl",
+   "inverted": false
+  },
+  "MapResetOnQuitUrl": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.ResetOnQuitUrl",
+   "expr": "resetOnQuitUrl",
+   "inverted": false
+  },
+  "MapShowReloadButton": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.AdditionalWindow.ShowReloadButton",
+   "expr": "showReloadButton",
+   "inverted": false
+  },
+  "MapShowReloadWarning": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.MainWindow.ShowReloadWarning",
+   "expr": "showReloadWarning",
+   "inverted": false
+  },
+  "MapSendCustomHeaders": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.SendConfigurationKey",
+   "expr": "flag",
+   "inverted": false
+  },
+  "MapShowFileSystemElementPath": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.ShowFileSystemElementPath",
+   "expr": "showFileSystemElementPath",
+   "inverted": false
+  },
+  "MapShowReloadWarningAdditionalWindow": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.AdditionalWindow.ShowReloadWarning",
+   "expr": "showReloadWarning",
+   "inverted": false
+  },
+  "MapShowToolbar": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.AdditionalWindow.ShowToolbar",
+   "expr": "showToolbar",
+   "inverted": false
+  },
+  "MapStartUrl": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.StartUrl",
+   "expr": "startUrl",
+   "inverted": false
+  },
+  "MapUserAgentSuffix": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.UserAgentSuffix",
+   "expr": "userAgentSuffix",
+   "inverted": false
+  },
+  "MapUseStartUrlQuery": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.UseQueryParameter",
+   "expr": "useQueryParameter",
+   "inverted": false
+  },
+  "MapUseTemporaryDownUploadDirectory": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.UseTemporaryDownAndUploadDirectory",
+   "expr": "useTemporaryDownAndUploadDirectory",
+   "inverted": false
+  },
+  "MapProxySettings": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.Proxy.AutoConfigure",
+   "expr": "autoConfigure",
+   "inverted": false
+  },
+  "MapProxyPolicy": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.Proxy.Policy",
+   "expr": "ProxyPolicy.Custom",
+   "inverted": false
+  },
+  "MapWindowHeightAdditionalWindow": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.AdditionalWindow.AbsoluteHeight",
+   "expr": "null",
+   "inverted": false
+  },
+  "MapWindowHeightMainWindow": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.MainWindow.AbsoluteHeight",
+   "expr": "null",
+   "inverted": false
+  },
+  "MapWindowPositionAdditionalWindow": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.AdditionalWindow.Position",
+   "expr": "WindowPosition.Left",
+   "inverted": false
+  },
+  "MapWindowPositionMainWindow": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.MainWindow.Position",
+   "expr": "WindowPosition.Left",
+   "inverted": false
+  },
+  "MapWindowWidthAdditionalWindow": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.AdditionalWindow.AbsoluteWidth",
+   "expr": "null",
+   "inverted": false
+  },
+  "MapWindowWidthMainWindow": {
+   "file": "BrowserDataMapper",
+   "prop": "Browser.MainWindow.AbsoluteWidth",
+   "expr": "null",
+   "inverted": false
+  },
+  "MapConfigurationMode": {
+   "file": "ConfigurationFileDataMapper",
+   "prop": "ConfigurationMode",
+   "expr": "((num != 1) ? ConfigurationMode.Exam : ConfigurationMode.ConfigureClie",
+   "inverted": true
+  },
+  "MapSessionMode": {
+   "file": "ConfigurationFileDataMapper",
+   "prop": "SessionMode",
+   "expr": "((num == 1) ? SessionMode.Server : SessionMode.Normal)",
+   "inverted": false
+  },
+  "MapAllowedDisplays": {
+   "file": "DisplayDataMapper",
+   "prop": "Display.AllowedDisplays",
+   "expr": "allowedDisplays",
+   "inverted": false
+  },
+  "MapAlwaysOn": {
+   "file": "SystemDataMapper",
+   "prop": "System.AlwaysOn",
+   "expr": "alwaysOn",
+   "inverted": false
+  },
+  "MapIgnoreError": {
+   "file": "DisplayDataMapper",
+   "prop": "Display.IgnoreError",
+   "expr": "ignoreError",
+   "inverted": false
+  },
+  "MapInternalDisplayOnly": {
+   "file": "DisplayDataMapper",
+   "prop": "Display.InternalDisplayOnly",
+   "expr": "internalDisplayOnly",
+   "inverted": false
+  },
+  "MapEnableAltEsc": {
+   "file": "InputDataMapper",
+   "prop": "Keyboard.AllowAltEsc",
+   "expr": "allowAltEsc",
+   "inverted": false
+  },
+  "MapEnableAltF4": {
+   "file": "InputDataMapper",
+   "prop": "Keyboard.AllowAltF4",
+   "expr": "allowAltF",
+   "inverted": false
+  },
+  "MapEnableAltTab": {
+   "file": "InputDataMapper",
+   "prop": "Keyboard.AllowAltTab",
+   "expr": "allowAltTab",
+   "inverted": false
+  },
+  "MapEnableCtrlEsc": {
+   "file": "InputDataMapper",
+   "prop": "Keyboard.AllowCtrlEsc",
+   "expr": "allowCtrlEsc",
+   "inverted": false
+  },
+  "MapEnableEsc": {
+   "file": "InputDataMapper",
+   "prop": "Keyboard.AllowEsc",
+   "expr": "allowEsc",
+   "inverted": false
+  },
+  "MapEnableF1": {
+   "file": "InputDataMapper",
+   "prop": "Keyboard.AllowF1",
+   "expr": "allowF",
+   "inverted": false
+  },
+  "MapEnableF2": {
+   "file": "InputDataMapper",
+   "prop": "Keyboard.AllowF2",
+   "expr": "allowF",
+   "inverted": false
+  },
+  "MapEnableF3": {
+   "file": "InputDataMapper",
+   "prop": "Keyboard.AllowF3",
+   "expr": "allowF",
+   "inverted": false
+  },
+  "MapEnableF4": {
+   "file": "InputDataMapper",
+   "prop": "Keyboard.AllowF4",
+   "expr": "allowF",
+   "inverted": false
+  },
+  "MapEnableF5": {
+   "file": "InputDataMapper",
+   "prop": "Keyboard.AllowF5",
+   "expr": "allowF",
+   "inverted": false
+  },
+  "MapEnableF6": {
+   "file": "InputDataMapper",
+   "prop": "Keyboard.AllowF6",
+   "expr": "allowF",
+   "inverted": false
+  },
+  "MapEnableF7": {
+   "file": "InputDataMapper",
+   "prop": "Keyboard.AllowF7",
+   "expr": "allowF",
+   "inverted": false
+  },
+  "MapEnableF8": {
+   "file": "InputDataMapper",
+   "prop": "Keyboard.AllowF8",
+   "expr": "allowF",
+   "inverted": false
+  },
+  "MapEnableF9": {
+   "file": "InputDataMapper",
+   "prop": "Keyboard.AllowF9",
+   "expr": "allowF",
+   "inverted": false
+  },
+  "MapEnableF10": {
+   "file": "InputDataMapper",
+   "prop": "Keyboard.AllowF10",
+   "expr": "allowF",
+   "inverted": false
+  },
+  "MapEnableF11": {
+   "file": "InputDataMapper",
+   "prop": "Keyboard.AllowF11",
+   "expr": "allowF",
+   "inverted": false
+  },
+  "MapEnableF12": {
+   "file": "InputDataMapper",
+   "prop": "Keyboard.AllowF12",
+   "expr": "allowF",
+   "inverted": false
+  },
+  "MapEnablePrintScreen": {
+   "file": "InputDataMapper",
+   "prop": "Keyboard.AllowPrintScreen",
+   "expr": "allowPrintScreen",
+   "inverted": false
+  },
+  "MapEnableSystemKey": {
+   "file": "InputDataMapper",
+   "prop": "Keyboard.AllowSystemKey",
+   "expr": "allowSystemKey",
+   "inverted": false
+  },
+  "MapEnableMiddleMouseButton": {
+   "file": "InputDataMapper",
+   "prop": "Mouse.AllowMiddleButton",
+   "expr": "allowMiddleButton",
+   "inverted": false
+  },
+  "MapEnableRightMouseButton": {
+   "file": "InputDataMapper",
+   "prop": "Mouse.AllowRightButton",
+   "expr": "allowRightButton",
+   "inverted": false
+  },
+  "MapCacheSize": {
+   "file": "ProctoringDataMapper",
+   "prop": "Proctoring.ScreenProctoring.CacheSize",
+   "expr": "cacheSize",
+   "inverted": false
+  },
+  "MapCaptureApplicationData": {
+   "file": "ProctoringDataMapper",
+   "prop": "Proctoring.ScreenProctoring.MetaData.CaptureApplicationData",
+   "expr": "captureApplicationData",
+   "inverted": false
+  },
+  "MapCaptureBrowserData": {
+   "file": "ProctoringDataMapper",
+   "prop": "Proctoring.ScreenProctoring.MetaData.CaptureBrowserData",
+   "expr": "captureBrowserData",
+   "inverted": false
+  },
+  "MapCaptureWindowTitle": {
+   "file": "ProctoringDataMapper",
+   "prop": "Proctoring.ScreenProctoring.MetaData.CaptureWindowTitle",
+   "expr": "captureWindowTitle",
+   "inverted": false
+  },
+  "MapClientId": {
+   "file": "ProctoringDataMapper",
+   "prop": "Proctoring.ScreenProctoring.ClientId",
+   "expr": "clientId",
+   "inverted": false
+  },
+  "MapClientSecret": {
+   "file": "ProctoringDataMapper",
+   "prop": "Proctoring.ScreenProctoring.ClientSecret",
+   "expr": "clientSecret",
+   "inverted": false
+  },
+  "MapGroupId": {
+   "file": "ProctoringDataMapper",
+   "prop": "Proctoring.ScreenProctoring.GroupId",
+   "expr": "groupId",
+   "inverted": false
+  },
+  "MapImageDownscaling": {
+   "file": "ProctoringDataMapper",
+   "prop": "Proctoring.ScreenProctoring.ImageDownscaling",
+   "expr": "imageDownscaling",
+   "inverted": false
+  },
+  "MapImageFormat": {
+   "file": "ProctoringDataMapper",
+   "prop": "Proctoring.ScreenProctoring.ImageFormat",
+   "expr": "result",
+   "inverted": false
+  },
+  "MapImageQuantization": {
+   "file": "ProctoringDataMapper",
+   "prop": "Proctoring.ScreenProctoring.ImageQuantization",
+   "expr": "ImageQuantization.BlackAndWhite1bpp",
+   "inverted": false
+  },
+  "MapIntervalMaximum": {
+   "file": "ProctoringDataMapper",
+   "prop": "Proctoring.ScreenProctoring.IntervalMaximum",
+   "expr": "intervalMaximum",
+   "inverted": false
+  },
+  "MapIntervalMinimum": {
+   "file": "ProctoringDataMapper",
+   "prop": "Proctoring.ScreenProctoring.IntervalMinimum",
+   "expr": "intervalMinimum",
+   "inverted": false
+  },
+  "MapScreenProctoringEnabled": {
+   "file": "ProctoringDataMapper",
+   "prop": "Proctoring.ScreenProctoring.Enabled",
+   "expr": "enabled",
+   "inverted": false
+  },
+  "MapServiceUrl": {
+   "file": "ProctoringDataMapper",
+   "prop": "Proctoring.ScreenProctoring.ServiceUrl",
+   "expr": "serviceUrl",
+   "inverted": false
+  },
+  "MapShowTaskbarNotification": {
+   "file": "ProctoringDataMapper",
+   "prop": "Proctoring.ShowTaskbarNotification",
+   "expr": "showTaskbarNotification",
+   "inverted": false
+  },
+  "MapAdminPasswordHash": {
+   "file": "SecurityDataMapper",
+   "prop": "Security.AdminPasswordHash",
+   "expr": "adminPasswordHash",
+   "inverted": false
+  },
+  "MapAllowReconfiguration": {
+   "file": "SecurityDataMapper",
+   "prop": "Security.AllowReconfiguration",
+   "expr": "allowReconfiguration",
+   "inverted": false
+  },
+  "MapAllowStickyKeys": {
+   "file": "SecurityDataMapper",
+   "prop": "Security.AllowStickyKeys",
+   "expr": "allowStickyKeys",
+   "inverted": false
+  },
+  "MapAllowTermination": {
+   "file": "SecurityDataMapper",
+   "prop": "Security.AllowTermination",
+   "expr": "allowTermination",
+   "inverted": false
+  },
+  "MapAllowWindowCapture": {
+   "file": "SecurityDataMapper",
+   "prop": "Security.AllowWindowCapture",
+   "expr": "allowWindowCapture",
+   "inverted": false
+  },
+  "MapQuitPasswordHash": {
+   "file": "SecurityDataMapper",
+   "prop": "Security.QuitPasswordHash",
+   "expr": "quitPasswordHash",
+   "inverted": false
+  },
+  "MapDisableSessionChangeLockScreen": {
+   "file": "SecurityDataMapper",
+   "prop": "Security.DisableSessionChangeLockScreen",
+   "expr": "disableSessionChangeLockScreen",
+   "inverted": false
+  },
+  "MapVirtualMachinePolicy": {
+   "file": "SecurityDataMapper",
+   "prop": "Security.VirtualMachinePolicy",
+   "expr": "((!flag) ? VirtualMachinePolicy.Deny : VirtualMachinePolicy.Allow)",
+   "inverted": true
+  },
+  "MapReconfigurationUrl": {
+   "file": "SecurityDataMapper",
+   "prop": "Security.ReconfigurationUrl",
+   "expr": "reconfigurationUrl",
+   "inverted": false
+  },
+  "MapVerifyCursorConfiguration": {
+   "file": "SecurityDataMapper",
+   "prop": "Security.VerifyCursorConfiguration",
+   "expr": "verifyCursorConfiguration",
+   "inverted": false
+  },
+  "MapVerifySessionIntegrity": {
+   "file": "SecurityDataMapper",
+   "prop": "Security.VerifySessionIntegrity",
+   "expr": "verifySessionIntegrity",
+   "inverted": false
+  },
+  "MapConfiguration": {
+   "file": "ServerDataMapper",
+   "prop": "Server.ApiEndpoint",
+   "expr": "apiEndpoint",
+   "inverted": false
+  },
+  "MapFallbackPasswordHash": {
+   "file": "ServerDataMapper",
+   "prop": "Server.FallbackPasswordHash",
+   "expr": "fallbackPasswordHash",
+   "inverted": false
+  },
+  "MapForceRaiseHandMessage": {
+   "file": "ServerDataMapper",
+   "prop": "Server.Invigilation.ForceRaiseHandMessage",
+   "expr": "forceRaiseHandMessage",
+   "inverted": false
+  },
+  "MapPerformFallback": {
+   "file": "ServerDataMapper",
+   "prop": "Server.PerformFallback",
+   "expr": "performFallback",
+   "inverted": false
+  },
+  "MapRequestAttempts": {
+   "file": "ServerDataMapper",
+   "prop": "Server.RequestAttempts",
+   "expr": "requestAttempts",
+   "inverted": false
+  },
+  "MapRequestAttemptInterval": {
+   "file": "ServerDataMapper",
+   "prop": "Server.RequestAttemptInterval",
+   "expr": "requestAttemptInterval",
+   "inverted": false
+  },
+  "MapRequestTimeout": {
+   "file": "ServerDataMapper",
+   "prop": "Server.RequestTimeout",
+   "expr": "requestTimeout",
+   "inverted": false
+  },
+  "MapServerUrl": {
+   "file": "ServerDataMapper",
+   "prop": "Server.ServerUrl",
+   "expr": "serverUrl",
+   "inverted": false
+  },
+  "MapShowRaiseHand": {
+   "file": "ServerDataMapper",
+   "prop": "Server.Invigilation.ShowRaiseHandNotification",
+   "expr": "showRaiseHandNotification",
+   "inverted": false
+  },
+  "MapEnableChromeNotifications": {
+   "file": "ServiceDataMapper",
+   "prop": "Service.DisableChromeNotifications",
+   "expr": "!flag",
+   "inverted": true
+  },
+  "MapEnableEaseOfAccessOptions": {
+   "file": "ServiceDataMapper",
+   "prop": "Service.DisableEaseOfAccessOptions",
+   "expr": "!flag",
+   "inverted": true
+  },
+  "MapEnableFindPrinter": {
+   "file": "ServiceDataMapper",
+   "prop": "Service.DisableFindPrinter",
+   "expr": "!flag",
+   "inverted": true
+  },
+  "MapEnableNetworkOptions": {
+   "file": "ServiceDataMapper",
+   "prop": "Service.DisableNetworkOptions",
+   "expr": "!flag",
+   "inverted": true
+  },
+  "MapEnablePasswordChange": {
+   "file": "ServiceDataMapper",
+   "prop": "Service.DisablePasswordChange",
+   "expr": "!flag",
+   "inverted": true
+  },
+  "MapEnablePowerOptions": {
+   "file": "ServiceDataMapper",
+   "prop": "Service.DisablePowerOptions",
+   "expr": "!flag",
+   "inverted": true
+  },
+  "MapEnableRemoteConnections": {
+   "file": "ServiceDataMapper",
+   "prop": "Service.DisableRemoteConnections",
+   "expr": "!flag",
+   "inverted": true
+  },
+  "MapEnableSignout": {
+   "file": "ServiceDataMapper",
+   "prop": "Service.DisableSignout",
+   "expr": "!flag",
+   "inverted": true
+  },
+  "MapEnableTaskManager": {
+   "file": "ServiceDataMapper",
+   "prop": "Service.DisableTaskManager",
+   "expr": "!flag",
+   "inverted": true
+  },
+  "MapEnableUserLock": {
+   "file": "ServiceDataMapper",
+   "prop": "Service.DisableUserLock",
+   "expr": "!flag",
+   "inverted": true
+  },
+  "MapEnableUserSwitch": {
+   "file": "ServiceDataMapper",
+   "prop": "Service.DisableUserSwitch",
+   "expr": "!flag",
+   "inverted": true
+  },
+  "MapEnableVmwareOverlay": {
+   "file": "ServiceDataMapper",
+   "prop": "Service.DisableVmwareOverlay",
+   "expr": "!flag",
+   "inverted": true
+  },
+  "MapEnableWindowsUpdate": {
+   "file": "ServiceDataMapper",
+   "prop": "Service.DisableWindowsUpdate",
+   "expr": "!flag",
+   "inverted": true
+  },
+  "MapIgnoreService": {
+   "file": "ServiceDataMapper",
+   "prop": "Service.IgnoreService",
+   "expr": "ignoreService",
+   "inverted": false
+  },
+  "MapSetVmwareConfiguration": {
+   "file": "ServiceDataMapper",
+   "prop": "Service.SetVmwareConfiguration",
+   "expr": "setVmwareConfiguration",
+   "inverted": false
+  },
+  "MapEnableActionCenter": {
+   "file": "UserInterfaceDataMapper",
+   "prop": "UserInterface.ActionCenter.EnableActionCenter",
+   "expr": "enableActionCenter",
+   "inverted": false
+  },
+  "MapLockScreenBackgroundColor": {
+   "file": "UserInterfaceDataMapper",
+   "prop": "UserInterface.LockScreen.BackgroundColor",
+   "expr": "backgroundColor",
+   "inverted": false
+  },
+  "MapShowAudio": {
+   "file": "UserInterfaceDataMapper",
+   "prop": "UserInterface.ActionCenter.ShowAudio",
+   "expr": "showAudio",
+   "inverted": false
+  },
+  "MapShowClock": {
+   "file": "UserInterfaceDataMapper",
+   "prop": "UserInterface.ActionCenter.ShowClock",
+   "expr": "showClock",
+   "inverted": false
+  },
+  "MapShowKeyboardLayout": {
+   "file": "UserInterfaceDataMapper",
+   "prop": "UserInterface.ActionCenter.ShowKeyboardLayout",
+   "expr": "showKeyboardLayout",
+   "inverted": false
+  },
+  "MapShowNetwork": {
+   "file": "UserInterfaceDataMapper",
+   "prop": "UserInterface.ActionCenter.ShowNetwork",
+   "expr": "showNetwork",
+   "inverted": false
+  },
+  "MapChargeThresholdCritical": {
+   "file": "UserInterfaceDataMapper",
+   "prop": "PowerSupply.ChargeThresholdCritical",
+   "expr": "chargeThresholdCritical",
+   "inverted": false
+  },
+  "MapChargeThresholdLow": {
+   "file": "UserInterfaceDataMapper",
+   "prop": "PowerSupply.ChargeThresholdLow",
+   "expr": "chargeThresholdLow",
+   "inverted": false
+  },
+  "MapEnableTaskbar": {
+   "file": "UserInterfaceDataMapper",
+   "prop": "UserInterface.Taskbar.EnableTaskbar",
+   "expr": "enableTaskbar",
+   "inverted": false
+  },
+  "MapShowApplicationLog": {
+   "file": "UserInterfaceDataMapper",
+   "prop": "UserInterface.Taskbar.ShowApplicationLog",
+   "expr": "showApplicationLog",
+   "inverted": false
+  },
+  "MapUserInterfaceMode": {
+   "file": "UserInterfaceDataMapper",
+   "prop": "UserInterface.Mode",
+   "expr": "(flag ? UserInterfaceMode.Mobile : UserInterfaceMode.Desktop)",
+   "inverted": false
+  }
+ },
+ "dispatch": {
+  "prohibitedProcesses": "MapApplicationWhitelist",
+  "permittedProcesses": "MapApplicationWhitelist",
+  "downloadAndOpenSebConfig": "MapAllowConfigurationDownloads",
+  "allowBrowsingBackForward": "MapAllowNavigation",
+  "browserWindowAllowReload": "MapAllowReload",
+  "allowDeveloperConsole": "MapAllowDeveloperConsole",
+  "allowPDFReaderToolbar": "MapAllowPdfReaderToolbar",
+  "allowDownloads": "MapAllowDownloads",
+  "enableZoomPage": "MapAllowPageZoom",
+  "URLFilterRules": "MapFilterRules",
+  "restartExamURL": "MapHomeButtonUrl",
+  "quitURLConfirm": "MapQuitUrlConfirmation",
+  "quitURLRestart": "MapResetOnQuitUrl",
+  "allowSpellCheck": "MapAllowSpellChecking",
+  "restartExamText": "MapHomeButtonMessage",
+  "browserViewMode": "MapMainWindowMode",
+  "newBrowserWindowAllowAddressBar": "MapAllowAddressBarAdditionalWindow",
+  "useTemporaryDownUploadDirectory": "MapUseTemporaryDownUploadDirectory",
+  "newBrowserWindowNavigation": "MapAllowNavigationAdditionalWindow",
+  "enableBrowserWindowToolbar": "MapShowToolbar",
+  "newBrowserWindowAllowReload": "MapAllowReloadAdditionalWindow",
+  "newBrowserWindowByLinkWidth": "MapWindowWidthAdditionalWindow",
+  "newBrowserWindowShowReloadWarning": "MapShowReloadWarningAdditionalWindow",
+  "newBrowserWindowByLinkPositioning": "MapWindowPositionAdditionalWindow",
+  "newBrowserWindowShowURL": "MapUrlPolicy",
+  "mainBrowserWindowHeight": "MapWindowHeightMainWindow",
+  "newBrowserWindowByLinkHeight": "MapWindowHeightAdditionalWindow",
+  "examSessionClearCookiesOnEnd": "MapDeleteCookiesOnShutdown",
+  "restartExamPasswordProtected": "MapHomeButtonRequiresPassword",
+  "browserWindowAllowAddressBar": "MapAllowAddressBar",
+  "mainBrowserWindowPositioning": "MapWindowPositionMainWindow",
+  "startURLAppendQueryParameter": "MapUseStartUrlQuery",
+  "removeBrowserProfile": "MapDeleteCacheOnShutdown",
+  "downloadDirectoryWin": "MapDownloadDirectory",
+  "browserWindowShowURL": "MapUrlPolicy",
+  "downloadPDFFiles": "MapDownloadPdfFiles",
+  "enableSebBrowser": "MapEnableBrowser",
+  "showReloadButton": "MapShowReloadButton",
+  "browserUserAgent": "MapUserAgentSuffix",
+  "restartExamUseStartURL": "MapHomeButtonUseStartUrl",
+  "mainBrowserWindowWidth": "MapWindowWidthMainWindow",
+  "proxies": "MapProxySettings",
+  "quitURL": "MapQuitUrl",
+  "allowCustomDownUploadLocation": "MapAllowCustomDownloadLocation",
+  "allowFind": "MapAllowFind",
+  "allowPrint": "MapAllowPrint",
+  "allowUploads": "MapAllowUploads",
+  "examSessionClearCookiesOnStart": "MapDeleteCookiesOnStartup",
+  "examKeySalt": "MapExamKeySalt",
+  "showReloadWarning": "MapShowReloadWarning",
+  "proxySettingsPolicy": "MapProxyPolicy",
+  "sendBrowserExamKey": "MapSendCustomHeaders",
+  "browserShowFileSystemElementPath": "MapShowFileSystemElementPath",
+  "startURL": "MapStartUrl",
+  "sebConfigPurpose": "MapSessionMode",
+  "sebMode": "MapSessionMode",
+  "logLevel": "MapLogLevel",
+  "enableAltEsc": "MapEnableAltEsc",
+  "enableAltTab": "MapEnableAltTab",
+  "enableEsc": "MapEnableEsc",
+  "enableF10": "MapEnableF10",
+  "enableF11": "MapEnableF11",
+  "enableF12": "MapEnableF12",
+  "enableF1": "MapEnableF1",
+  "enableF2": "MapEnableF2",
+  "enableF3": "MapEnableF3",
+  "enableF4": "MapEnableF4",
+  "enableF5": "MapEnableF5",
+  "enableF6": "MapEnableF6",
+  "enableF7": "MapEnableF7",
+  "enableF8": "MapEnableF8",
+  "enableF9": "MapEnableF9",
+  "enablePrintScreen": "MapEnablePrintScreen",
+  "enableMiddleMouse": "MapEnableMiddleMouseButton",
+  "enableAltF4": "MapEnableAltF4",
+  "enableCtrlEsc": "MapEnableCtrlEsc",
+  "enableStartMenu": "MapEnableSystemKey",
+  "enableRightMouse": "MapEnableRightMouseButton",
+  "screenProctoringClientId": "MapClientId",
+  "showProctoringViewButton": "MapShowTaskbarNotification",
+  "screenProctoringScreenshotMaxInterval": "MapIntervalMaximum",
+  "screenProctoringScreenshotMinInterval": "MapIntervalMinimum",
+  "screenProctoringCacheSize": "MapCacheSize",
+  "screenProctoringClientSecret": "MapClientSecret",
+  "enableScreenProctoring": "MapScreenProctoringEnabled",
+  "screenProctoringGroupId": "MapGroupId",
+  "screenProctoringImageDownscale": "MapImageDownscaling",
+  "screenProctoringImageFormat": "MapImageFormat",
+  "screenProctoringImageQuantization": "MapImageQuantization",
+  "screenProctoringMetadataActiveAppEnabled": "MapCaptureApplicationData",
+  "screenProctoringMetadataURLEnabled": "MapCaptureBrowserData",
+  "screenProctoringMetadataWindowTitleEnabled": "MapCaptureWindowTitle",
+  "screenProctoringServiceURL": "MapServiceUrl",
+  "hashedAdminPassword": "MapAdminPasswordHash",
+  "allowVirtualMachine": "MapVirtualMachinePolicy",
+  "allowStickyKeys": "MapAllowStickyKeys",
+  "clipboardPolicy": "MapClipboardPolicy",
+  "allowScreenSharing": "MapEnableRemoteConnections",
+  "hashedQuitPassword": "MapQuitPasswordHash",
+  "sebAllowedVersions": "MapVersionRestrictions",
+  "examSessionReconfigureAllow": "MapAllowReconfiguration",
+  "allowQuit": "MapAllowTermination",
+  "disableSessionChangeLockScreen": "MapDisableSessionChangeLockScreen",
+  "examSessionReconfigureConfigURL": "MapReconfigurationUrl",
+  "enableCursorVerification": "MapVerifyCursorConfiguration",
+  "enableSessionVerification": "MapVerifySessionIntegrity",
+  "sebServerConfiguration": "MapConfiguration",
+  "sebServerFallbackPasswordHash": "MapFallbackPasswordHash",
+  "raiseHandButtonAlwaysPromptMessage": "MapForceRaiseHandMessage",
+  "sebServerFallback": "MapPerformFallback",
+  "sebServerFallbackAttempts": "MapRequestAttempts",
+  "sebServerFallbackAttemptInterval": "MapRequestAttemptInterval",
+  "sebServerFallbackTimeout": "MapRequestTimeout",
+  "sebServerURL": "MapServerUrl",
+  "raiseHandButtonShow": "MapShowRaiseHand",
+  "enableChromeNotifications": "MapEnableChromeNotifications",
+  "insideSebEnableSwitchUser": "MapEnableUserSwitch",
+  "insideSebEnableStartTaskManager": "MapEnableTaskManager",
+  "insideSebEnableLockThisComputer": "MapEnableUserLock",
+  "sebServiceIgnore": "MapIgnoreService",
+  "sebServicePolicy": "MapPolicy",
+  "insideSebEnableEaseOfAccess": "MapEnableEaseOfAccessOptions",
+  "enableFindPrinter": "MapEnableFindPrinter",
+  "insideSebEnableNetworkConnectionSelector": "MapEnableNetworkOptions",
+  "insideSebEnableChangeAPassword": "MapEnablePasswordChange",
+  "insideSebEnableShutDown": "MapEnablePowerOptions",
+  "insideSebEnableLogOff": "MapEnableSignout",
+  "insideSebEnableVmWareClientShade": "MapEnableVmwareOverlay",
+  "enableWindowsUpdate": "MapEnableWindowsUpdate",
+  "setVmwareConfiguration": "MapSetVmwareConfiguration",
+  "systemAlwaysOn": "MapAlwaysOn",
+  "lockScreenBackgroundColor": "MapLockScreenBackgroundColor",
+  "batteryChargeThresholdLow": "MapChargeThresholdLow",
+  "showSideMenu": "MapEnableActionCenter",
+  "audioControlEnabled": "MapShowAudio",
+  "showTime": "MapShowClock",
+  "showInputLanguage": "MapShowKeyboardLayout",
+  "allowWlan": "MapShowNetwork",
+  "batteryChargeThresholdCritical": "MapChargeThresholdCritical",
+  "showTaskBar": "MapEnableTaskbar",
+  "showApplicationLogButton": "MapShowApplicationLog",
+  "touchOptimized": "MapUserInterfaceMode"
+ }
+}

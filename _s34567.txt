@@ -1,0 +1,182 @@
+## 3. Input handling
+
+### 3.1 Format detection
+
+Order of checks, first match wins:
+
+1. Read the first 4 bytes. If ASCII is one of `plnd` / `pswd` / `pwcc` / `pkhs` / `phsk` →
+   **SEB binary container** (`BinaryParser.cs` + `GZipCompressor.cs`). Out of scope.
+   Print: detected format, prefix, byte size, and the `BinaryParser` reference. Refuse cleanly.
+2. `plistlib.load(f, fmt=None)` — handles XML and binary plists. Success → proceed.
+3. On `plistlib.InvalidFileException` / `ExpatError` → report actual leading bytes in hex,
+   state "not a plist and not a recognized SEB container", refuse.
+
+Never crash on malformed input. Never write output for a refused input.
+
+### 3.2 Encrypted configs
+
+`SebClientSettings.seb` carries `useAsymmetricOnlyEncryption = True`. The scan pass reads and
+reports this flag; if the file declares encryption, emit a prominent warning that the local
+override caveat in §7 does not apply and stop before the toggle phase. Detection is a key read,
+not a format inspection — the plist parses either way.
+
+### 3.3 Non-XML output
+
+`plistlib.dump(..., fmt=FMT_XML)` always. SEB's own writer emits XML (`XmlParser` is the
+primary path); binary plist output would round-trip through `plistlib` but is unverified
+against the real client. Do not ship unverified format.
+
+---
+
+## 4. Value-semantics layer
+
+### 4.1 The polarity model
+
+Across the whole corpus, **for boolean keys the raw value is consistent: `True` permits,
+`False` restricts** — regardless of whether the C# mapper inverts it into a `Disable*` property.
+This holds for every `allow*` and `enable*` key including all 14 inverted ones.
+
+So the toggle operates on raw values with a **direct** polarity, and the §2.3 inversion table is
+carried as **display metadata**: it explains which restriction a key actually controls, without
+altering how the toggle writes.
+
+### 4.2 The exception set (non-boolean or flipped polarity)
+
+These cannot be toggled as booleans. Each gets an explicit value model:
+
+| Key(s) | Type | Model |
+|---|---|---|
+| `clipboardPolicy` | int | `0 → Allow`, `1 → Block`, other → `Isolated` |
+| `createNewDesktop`, `killExplorerShell` | bool pair | mutually exclusive → `KioskMode { None, CreateNewDesktop, DisableExplorerShell }`; True is *more* restrictive |
+| `sebMode` | int | `1 → Server`, else `Normal` |
+| `mainBrowserWindowMode` / `browserViewMode` | int | `1 → FullScreenMode true` |
+| `allowVirtualMachine` | bool | `True → Allow`, `False → Deny` |
+| `configurationMode` | int | `!= 1 → Exam`, else `ConfigureClient` |
+| `proxyPolicy` | int | `Custom` / `System` |
+| `hashedAdminPassword`, `hashedQuitPassword` | str | presence = restriction; empty = none |
+| `allowedDisplaysMaxNumber` | int | `1` = single-display restriction |
+| `prohibitedProcesses`, `permittedProcesses` | array | non-empty = restriction/allowlist active |
+| `examKeySalt` | bytes | must be base64'd in any JSON sidecar |
+
+The toggle UI surfaces these as **choice** entries (`Auto / Allow / Block / Isolated`) rather
+than flip-on/off, and refuses to write a value outside the extracted enum space.
+
+### 4.3 Absent-key semantics
+
+`AppSettings()` and `SecuritySettings()` constructors set no values (only `new`-up sub-objects
+and `VersionRestrictions = new List<>()`). There is no `Defaults` / `DefaultValues` class in
+the tree. Therefore an absent boolean is CLR `false`.
+
+Presented as a distinct status — **ABSENT-DEFAULTED** — with the effective value shown, so the
+operator can see that omitting `enableAltTab` does not mean "unset", it means "blocked".
+
+Default write policy: **absent keys are not written unless the operator explicitly opts in.**
+This is the direct fix for `seb_edit.py`'s defect. Adding a key is reported as an addition in the
+output diff, never as a silent edit.
+
+---
+
+## 5. Scan pass
+
+`seb_toggle.py <file.seb> --scan`
+
+### 5.1 Classification
+
+For every key in the file, classify on two axes — what the effective value does, and whether
+that posture is the author's doing or SEB's (§2.4):
+
+| Status | Condition |
+|---|---|
+| **RESTRICTION — author-imposed** | effective value restricts, and differs from the code default |
+| **RESTRICTION — SEB default** | effective value restricts, and equals the code default |
+| **PERMISSIVE** | recognized, effective value permits |
+| **MODE-SELECTOR** | non-boolean; show the resolved enum/int meaning |
+| **IGNORED-BY-3.10.2** | absent from the 219-declaration registry — printed in its own section |
+| **ABSENT-DEFAULTED** | in registry, not in file; effective = code default |
+
+The author-imposed / SEB-default split is not cosmetic. Without it the report cannot be
+distinguished from SEB reading its own defaults back to the operator: on `config (1)` it is the
+difference between reporting **1** real edit and **67** rows of noise (§2.4). Keys with no
+joinable code default (§2.3) report `DEFAULT n/a` and are never claimed as author-imposed —
+absence of a default is not evidence of an edit.
+
+`ABSENT-DEFAULTED` rows are shown and counted but are **not toggleable** unless `--add-missing`
+is passed (§4.3): writing a key the file never had is not a no-op, it makes the config
+unrecognisable to its author.
+
+### 5.2 Grouping and row shape
+
+Grouped by the `Keys.cs` category path — **33 buckets, read from `seb_registry.json`, never
+hardcoded** (§2.1). Each row:
+
+```
+STATUS                     KEY                        FILE      EFFECTIVE   DEFAULT   CONTROLS
+RESTRICTION author-imposed sendBrowserExamKey = True  True      sends key   False     Browser.SendConfigurationKey
+RESTRICTION SEB default    allowScreenSharing = False False     blocked     blocked   Service.DisableRemoteConnections  [inverted]
+RESTRICTION SEB default    enableAltTab = False       False     blocked     blocked   Keyboard.AllowAltTab
+PERMISSIVE                 downloadPDFFiles = True    True      allowed     allowed   Browser.AllowPdfReader            [inverted]
+MODE-SELECTOR              configurationMode = 1      -         Exam        Exam      ConfigurationMode
+IGNORED-BY-3.10.2          forceAppFolderLocation     -         n/a         n/a       (macOS / SEB 2.x)
+```
+
+`FILE` is the raw value as written. `EFFECTIVE` is the value after the mapper (§4.1).
+`DEFAULT` is the `LoadDefaultSettings()` literal for the mapped property, or `n/a`.
+`CONTROLS` comes from the §2.3 dispatch table — this is the column that makes the report
+readable, because a key name does not identify its property (§2.1 collisions:
+`allowScreenSharing` drives remote connections, *not* window capture).
+
+### 5.3 Summary header
+
+Total keys, RESTRICTION author-imposed, RESTRICTION SEB default, PERMISSIVE, MODE-SELECTOR,
+IGNORED-BY-3.10.2, ABSENT-DEFAULTED, plus `originatorVersion` and the encryption flag.
+
+The two restriction counts are printed separately, and the author-imposed count leads. A header
+that merges them states a number the file does not support.
+
+## 6. Toggle UX
+
+```
+seb_toggle.py <file.seb> [options]
+
+  (no flag)                 scan, then interactive toggle
+  --scan                    report only, no prompt
+  --scan --only-ignored     the 69 legacy keys and nothing else
+  -c/--category <name>      narrow the toggle menu to one registry category
+  -s/--set key=value        non-interactive; repeatable
+  -a/--add-missing          allow writing keys the file does not contain
+  -y/--yes                  skip the confirm prompt
+  -o/--out <path>           default: <stem>.modified.seb
+  --diff <other.seb>        compare two configs, report differing keys
+```
+
+Interactive flow:
+
+1. Print the scan report.
+2. Print the toggle menu **grouped by category**, numbered, showing current effective value and
+   the restriction it controls. Only keys the file actually contains are toggleable by default.
+3. Accept `3`, `3,7,12`, `12-18`, `all`, `none`, `done`.
+4. For each selection, flip to the permissive end (`True` / `Allow`) or offer a choice for
+   MODE-SELECTOR entries.
+5. Print a preview diff: `key: old → new`, additions listed separately and labelled.
+6. Confirm. On `y`, write. On `n`, return to the menu without touching disk.
+
+`safe` default: writing requires explicit confirmation. `--yes` is the only bypass.
+
+---
+
+## 7. Output write and self-verification
+
+Write to a **new file**, never in place. Default `<stem>.modified.seb`.
+
+Before declaring success, the tool re-opens the output and asserts:
+
+1. Every intended key changed to the intended value.
+2. **No other key changed** — full key-set and value comparison against the input.
+3. No key was added unless `--add-missing` was passed.
+4. `startURL` and every other non-selected key are byte-identical in value.
+5. Report byte delta (input size → output size) and the exact key-count delta.
+
+Any assertion failure → delete the output, report the violated assertion. No partial writes.
+
+---
+

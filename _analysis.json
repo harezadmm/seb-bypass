@@ -1,0 +1,640 @@
+{
+ "defaults": {
+  "Applications.Blacklist.ExecutableName": "\"AA_v3.exe\"",
+  "Applications.Blacklist.OriginalName": "\"AA_v3.exe\"",
+  "Applications.ExecutableName": "\"AeroAdmin.exe\"",
+  "Applications.OriginalName": "\"AeroAdmin.exe\"",
+  "ExecutableName": "\"beamyourscreen-host.exe\"",
+  "OriginalName": "\"beamyourscreen-host.exe\"",
+  "Browser.AdditionalWindow.AllowAddressBar": "false",
+  "Browser.AdditionalWindow.AllowBackwardNavigation": "true",
+  "Browser.AdditionalWindow.AllowDeveloperConsole": "false",
+  "Browser.AdditionalWindow.AllowForwardNavigation": "true",
+  "Browser.AdditionalWindow.AllowReloading": "true",
+  "Browser.AdditionalWindow.FullScreenMode": "false",
+  "Browser.AdditionalWindow.Position": "WindowPosition.Right",
+  "Browser.AdditionalWindow.RelativeHeight": "100",
+  "Browser.AdditionalWindow.RelativeWidth": "50",
+  "Browser.AdditionalWindow.ShowHomeButton": "false",
+  "Browser.AdditionalWindow.ShowReloadWarning": "false",
+  "Browser.AdditionalWindow.ShowToolbar": "false",
+  "Browser.AdditionalWindow.UrlPolicy": "UrlPolicy.Never",
+  "Browser.AllowConfigurationDownloads": "true",
+  "Browser.AllowCustomDownAndUploadLocation": "false",
+  "Browser.AllowDownloads": "true",
+  "Browser.AllowFind": "true",
+  "Browser.AllowPageZoom": "true",
+  "Browser.AllowPdfReader": "true",
+  "Browser.AllowPdfReaderToolbar": "false",
+  "Browser.AllowPrint": "false",
+  "Browser.AllowUploads": "false",
+  "Browser.DeleteCacheOnShutdown": "true",
+  "Browser.DeleteCookiesOnShutdown": "true",
+  "Browser.DeleteCookiesOnStartup": "true",
+  "Browser.EnableBrowser": "true",
+  "Browser.MainWindow.AllowAddressBar": "false",
+  "Browser.MainWindow.AllowBackwardNavigation": "false",
+  "Browser.MainWindow.AllowDeveloperConsole": "false",
+  "Browser.MainWindow.AllowForwardNavigation": "false",
+  "Browser.MainWindow.AllowReloading": "true",
+  "Browser.MainWindow.FullScreenMode": "false",
+  "Browser.MainWindow.RelativeHeight": "100",
+  "Browser.MainWindow.RelativeWidth": "100",
+  "Browser.MainWindow.ShowHomeButton": "false",
+  "Browser.MainWindow.ShowReloadWarning": "true",
+  "Browser.MainWindow.ShowToolbar": "false",
+  "Browser.MainWindow.UrlPolicy": "UrlPolicy.Never",
+  "Browser.PopupPolicy": "PopupPolicy.Allow",
+  "Browser.Proxy.Policy": "ProxyPolicy.System",
+  "Browser.ResetOnQuitUrl": "false",
+  "Browser.SendBrowserExamKey": "false",
+  "Browser.SendConfigurationKey": "false",
+  "Browser.ShowFileSystemElementPath": "true",
+  "Browser.StartUrl": "\"https://www.safeexambrowser.org/start\"",
+  "Browser.UseCustomUserAgent": "false",
+  "Browser.UseIsolatedClipboard": "true",
+  "Browser.UseQueryParameter": "false",
+  "Browser.UseTemporaryDownAndUploadDirectory": "false",
+  "ConfigurationMode": "ConfigurationMode.Exam",
+  "Display.AllowedDisplays": "1",
+  "Display.AlwaysOn": "true",
+  "Display.IgnoreError": "false",
+  "Display.InternalDisplayOnly": "false",
+  "Keyboard.AllowAltEsc": "false",
+  "Keyboard.AllowAltF4": "false",
+  "Keyboard.AllowAltTab": "true",
+  "Keyboard.AllowCtrlC": "true",
+  "Keyboard.AllowCtrlEsc": "false",
+  "Keyboard.AllowCtrlV": "true",
+  "Keyboard.AllowCtrlX": "true",
+  "Keyboard.AllowEsc": "true",
+  "Keyboard.AllowF1": "true",
+  "Keyboard.AllowF2": "true",
+  "Keyboard.AllowF3": "true",
+  "Keyboard.AllowF4": "true",
+  "Keyboard.AllowF5": "true",
+  "Keyboard.AllowF6": "true",
+  "Keyboard.AllowF7": "true",
+  "Keyboard.AllowF8": "true",
+  "Keyboard.AllowF9": "true",
+  "Keyboard.AllowF10": "true",
+  "Keyboard.AllowF11": "true",
+  "Keyboard.AllowF12": "true",
+  "Keyboard.AllowPrintScreen": "false",
+  "Keyboard.AllowSystemKey": "false",
+  "LogLevel": "LogLevel.Debug",
+  "Mouse.AllowMiddleButton": "false",
+  "Mouse.AllowRightButton": "true",
+  "PowerSupply.ChargeThresholdCritical": "0.1",
+  "PowerSupply.ChargeThresholdLow": "0.2",
+  "Proctoring.Enabled": "false",
+  "Proctoring.ScreenProctoring.CacheSize": "500",
+  "Proctoring.ScreenProctoring.Enabled": "false",
+  "Proctoring.ScreenProctoring.ImageDownscaling": "1.0",
+  "Proctoring.ScreenProctoring.ImageFormat": "ImageFormat.Png",
+  "Proctoring.ScreenProctoring.ImageQuantization": "ImageQuantization.Grayscale4bpp",
+  "Proctoring.ScreenProctoring.IntervalMaximum": "5000",
+  "Proctoring.ScreenProctoring.IntervalMinimum": "1000",
+  "Proctoring.ScreenProctoring.MetaData.CaptureApplicationData": "true",
+  "Proctoring.ScreenProctoring.MetaData.CaptureBrowserData": "true",
+  "Proctoring.ScreenProctoring.MetaData.CaptureWindowTitle": "true",
+  "Proctoring.ShowTaskbarNotification": "true",
+  "Security.AllowApplicationLogAccess": "false",
+  "Security.AllowReconfiguration": "false",
+  "Security.AllowStickyKeys": "false",
+  "Security.AllowTermination": "true",
+  "Security.AllowWindowCapture": "false",
+  "Security.ClipboardPolicy": "ClipboardPolicy.Isolated",
+  "Security.DisableSessionChangeLockScreen": "false",
+  "Security.KioskMode": "KioskMode.CreateNewDesktop",
+  "Security.VerifyCursorConfiguration": "true",
+  "Security.VerifySessionIntegrity": "true",
+  "Security.VirtualMachinePolicy": "VirtualMachinePolicy.Deny",
+  "Server.Invigilation.ForceRaiseHandMessage": "false",
+  "Server.Invigilation.ShowRaiseHandNotification": "true",
+  "Server.PerformFallback": "false",
+  "Server.PingInterval": "1000",
+  "Server.RequestAttemptInterval": "2000",
+  "Server.RequestAttempts": "5",
+  "Server.RequestTimeout": "30000",
+  "Service.DisableChromeNotifications": "true",
+  "Service.DisableEaseOfAccessOptions": "true",
+  "Service.DisableFindPrinter": "true",
+  "Service.DisableNetworkOptions": "true",
+  "Service.DisablePasswordChange": "true",
+  "Service.DisablePowerOptions": "true",
+  "Service.DisableRemoteConnections": "true",
+  "Service.DisableSignout": "true",
+  "Service.DisableTaskManager": "true",
+  "Service.DisableUserLock": "true",
+  "Service.DisableUserSwitch": "true",
+  "Service.DisableVmwareOverlay": "true",
+  "Service.DisableWindowsUpdate": "true",
+  "Service.IgnoreService": "true",
+  "Service.Policy": "ServicePolicy.Mandatory",
+  "Service.SetVmwareConfiguration": "false",
+  "SessionMode": "SessionMode.Normal",
+  "System.AlwaysOn": "true",
+  "UserInterface.ActionCenter.EnableActionCenter": "true",
+  "UserInterface.ActionCenter.ShowApplicationInfo": "true",
+  "UserInterface.ActionCenter.ShowApplicationLog": "false",
+  "UserInterface.ActionCenter.ShowClock": "true",
+  "UserInterface.ActionCenter.ShowKeyboardLayout": "true",
+  "UserInterface.ActionCenter.ShowNetwork": "false",
+  "UserInterface.LockScreen.BackgroundColor": "\"#ff0000\"",
+  "UserInterface.Mode": "UserInterfaceMode.Desktop",
+  "UserInterface.Taskbar.EnableTaskbar": "true",
+  "UserInterface.Taskbar.ShowApplicationInfo": "false",
+  "UserInterface.Taskbar.ShowApplicationLog": "false",
+  "UserInterface.Taskbar.ShowClock": "true",
+  "UserInterface.Taskbar.ShowKeyboardLayout": "true",
+  "UserInterface.Taskbar.ShowNetwork": "false"
+ },
+ "joined": {
+  "allowBrowsingBackForward": {
+   "prop": "Browser.MainWindow.AllowBackwardNavigation",
+   "default": "false",
+   "inverted": false
+  },
+  "allowCustomDownUploadLocation": {
+   "prop": "Browser.AllowCustomDownAndUploadLocation",
+   "default": "false",
+   "inverted": false
+  },
+  "allowDeveloperConsole": {
+   "prop": "Browser.MainWindow.AllowDeveloperConsole",
+   "default": "false",
+   "inverted": false
+  },
+  "allowFind": {
+   "prop": "Browser.AllowFind",
+   "default": "true",
+   "inverted": false
+  },
+  "allowPDFReaderToolbar": {
+   "prop": "Browser.AllowPdfReaderToolbar",
+   "default": "false",
+   "inverted": false
+  },
+  "allowQuit": {
+   "prop": "Security.AllowTermination",
+   "default": "true",
+   "inverted": false
+  },
+  "allowScreenSharing": {
+   "prop": "Service.DisableRemoteConnections",
+   "default": "true",
+   "inverted": true
+  },
+  "allowSpellCheck": {
+   "prop": "Browser.AllowSpellChecking",
+   "default": null,
+   "inverted": false
+  },
+  "allowVirtualMachine": {
+   "prop": "Security.VirtualMachinePolicy",
+   "default": "VirtualMachinePolicy.Deny",
+   "inverted": true
+  },
+  "allowWlan": {
+   "prop": "UserInterface.ActionCenter.ShowNetwork",
+   "default": "false",
+   "inverted": false
+  },
+  "audioControlEnabled": {
+   "prop": "UserInterface.ActionCenter.ShowAudio",
+   "default": null,
+   "inverted": false
+  },
+  "browserUserAgent": {
+   "prop": "Browser.UserAgentSuffix",
+   "default": null,
+   "inverted": false
+  },
+  "browserViewMode": {
+   "prop": "Browser.MainWindow.FullScreenMode",
+   "default": "false",
+   "inverted": false
+  },
+  "browserWindowAllowAddressBar": {
+   "prop": "Browser.MainWindow.AllowAddressBar",
+   "default": "false",
+   "inverted": false
+  },
+  "browserWindowAllowReload": {
+   "prop": "Browser.MainWindow.AllowReloading",
+   "default": "true",
+   "inverted": false
+  },
+  "downloadAndOpenSebConfig": {
+   "prop": "Browser.AllowConfigurationDownloads",
+   "default": "true",
+   "inverted": false
+  },
+  "downloadDirectoryWin": {
+   "prop": "Browser.DownAndUploadDirectory",
+   "default": null,
+   "inverted": false
+  },
+  "downloadPDFFiles": {
+   "prop": "Browser.AllowPdfReader",
+   "default": "true",
+   "inverted": true
+  },
+  "enableAltEsc": {
+   "prop": "Keyboard.AllowAltEsc",
+   "default": "false",
+   "inverted": false
+  },
+  "enableAltF4": {
+   "prop": "Keyboard.AllowAltF4",
+   "default": "false",
+   "inverted": false
+  },
+  "enableAltTab": {
+   "prop": "Keyboard.AllowAltTab",
+   "default": "true",
+   "inverted": false
+  },
+  "enableBrowserWindowToolbar": {
+   "prop": "Browser.AdditionalWindow.ShowToolbar",
+   "default": "false",
+   "inverted": false
+  },
+  "enableChromeNotifications": {
+   "prop": "Service.DisableChromeNotifications",
+   "default": "true",
+   "inverted": true
+  },
+  "enableCtrlEsc": {
+   "prop": "Keyboard.AllowCtrlEsc",
+   "default": "false",
+   "inverted": false
+  },
+  "enableEsc": {
+   "prop": "Keyboard.AllowEsc",
+   "default": "true",
+   "inverted": false
+  },
+  "enableF1": {
+   "prop": "Keyboard.AllowF1",
+   "default": "true",
+   "inverted": false
+  },
+  "enableF10": {
+   "prop": "Keyboard.AllowF10",
+   "default": "true",
+   "inverted": false
+  },
+  "enableF11": {
+   "prop": "Keyboard.AllowF11",
+   "default": "true",
+   "inverted": false
+  },
+  "enableF12": {
+   "prop": "Keyboard.AllowF12",
+   "default": "true",
+   "inverted": false
+  },
+  "enableF2": {
+   "prop": "Keyboard.AllowF2",
+   "default": "true",
+   "inverted": false
+  },
+  "enableF3": {
+   "prop": "Keyboard.AllowF3",
+   "default": "true",
+   "inverted": false
+  },
+  "enableF4": {
+   "prop": "Keyboard.AllowF4",
+   "default": "true",
+   "inverted": false
+  },
+  "enableF5": {
+   "prop": "Keyboard.AllowF5",
+   "default": "true",
+   "inverted": false
+  },
+  "enableF6": {
+   "prop": "Keyboard.AllowF6",
+   "default": "true",
+   "inverted": false
+  },
+  "enableF7": {
+   "prop": "Keyboard.AllowF7",
+   "default": "true",
+   "inverted": false
+  },
+  "enableF8": {
+   "prop": "Keyboard.AllowF8",
+   "default": "true",
+   "inverted": false
+  },
+  "enableF9": {
+   "prop": "Keyboard.AllowF9",
+   "default": "true",
+   "inverted": false
+  },
+  "enablePrintScreen": {
+   "prop": "Keyboard.AllowPrintScreen",
+   "default": "false",
+   "inverted": false
+  },
+  "enableRightMouse": {
+   "prop": "Mouse.AllowRightButton",
+   "default": "true",
+   "inverted": false
+  },
+  "enableSebBrowser": {
+   "prop": "Browser.EnableBrowser",
+   "default": "true",
+   "inverted": false
+  },
+  "enableStartMenu": {
+   "prop": "Keyboard.AllowSystemKey",
+   "default": "false",
+   "inverted": false
+  },
+  "enableWindowsUpdate": {
+   "prop": "Service.DisableWindowsUpdate",
+   "default": "true",
+   "inverted": true
+  },
+  "enableZoomPage": {
+   "prop": "Browser.AllowPageZoom",
+   "default": "true",
+   "inverted": false
+  },
+  "examKeySalt": {
+   "prop": "Browser.BrowserExamKeySalt",
+   "default": null,
+   "inverted": false
+  },
+  "examSessionClearCookiesOnEnd": {
+   "prop": "Browser.DeleteCookiesOnShutdown",
+   "default": "true",
+   "inverted": false
+  },
+  "examSessionClearCookiesOnStart": {
+   "prop": "Browser.DeleteCookiesOnStartup",
+   "default": "true",
+   "inverted": false
+  },
+  "examSessionReconfigureAllow": {
+   "prop": "Security.AllowReconfiguration",
+   "default": "false",
+   "inverted": false
+  },
+  "examSessionReconfigureConfigURL": {
+   "prop": "Security.ReconfigurationUrl",
+   "default": null,
+   "inverted": false
+  },
+  "hashedAdminPassword": {
+   "prop": "Security.AdminPasswordHash",
+   "default": null,
+   "inverted": false
+  },
+  "hashedQuitPassword": {
+   "prop": "Security.QuitPasswordHash",
+   "default": null,
+   "inverted": false
+  },
+  "insideSebEnableChangeAPassword": {
+   "prop": "Service.DisablePasswordChange",
+   "default": "true",
+   "inverted": true
+  },
+  "insideSebEnableEaseOfAccess": {
+   "prop": "Service.DisableEaseOfAccessOptions",
+   "default": "true",
+   "inverted": true
+  },
+  "insideSebEnableLockThisComputer": {
+   "prop": "Service.DisableUserLock",
+   "default": "true",
+   "inverted": true
+  },
+  "insideSebEnableLogOff": {
+   "prop": "Service.DisableSignout",
+   "default": "true",
+   "inverted": true
+  },
+  "insideSebEnableNetworkConnectionSelector": {
+   "prop": "Service.DisableNetworkOptions",
+   "default": "true",
+   "inverted": true
+  },
+  "insideSebEnableShutDown": {
+   "prop": "Service.DisablePowerOptions",
+   "default": "true",
+   "inverted": true
+  },
+  "insideSebEnableStartTaskManager": {
+   "prop": "Service.DisableTaskManager",
+   "default": "true",
+   "inverted": true
+  },
+  "insideSebEnableSwitchUser": {
+   "prop": "Service.DisableUserSwitch",
+   "default": "true",
+   "inverted": true
+  },
+  "insideSebEnableVmWareClientShade": {
+   "prop": "Service.DisableVmwareOverlay",
+   "default": "true",
+   "inverted": true
+  },
+  "mainBrowserWindowHeight": {
+   "prop": "Browser.MainWindow.AbsoluteHeight",
+   "default": null,
+   "inverted": false
+  },
+  "mainBrowserWindowPositioning": {
+   "prop": "Browser.MainWindow.Position",
+   "default": null,
+   "inverted": false
+  },
+  "mainBrowserWindowWidth": {
+   "prop": "Browser.MainWindow.AbsoluteWidth",
+   "default": null,
+   "inverted": false
+  },
+  "newBrowserWindowAllowAddressBar": {
+   "prop": "Browser.AdditionalWindow.AllowAddressBar",
+   "default": "false",
+   "inverted": false
+  },
+  "newBrowserWindowAllowReload": {
+   "prop": "Browser.AdditionalWindow.AllowReloading",
+   "default": "true",
+   "inverted": false
+  },
+  "newBrowserWindowByLinkHeight": {
+   "prop": "Browser.AdditionalWindow.AbsoluteHeight",
+   "default": null,
+   "inverted": false
+  },
+  "newBrowserWindowByLinkPositioning": {
+   "prop": "Browser.AdditionalWindow.Position",
+   "default": "WindowPosition.Right",
+   "inverted": false
+  },
+  "newBrowserWindowByLinkWidth": {
+   "prop": "Browser.AdditionalWindow.AbsoluteWidth",
+   "default": null,
+   "inverted": false
+  },
+  "newBrowserWindowNavigation": {
+   "prop": "Browser.AdditionalWindow.AllowBackwardNavigation",
+   "default": "true",
+   "inverted": false
+  },
+  "newBrowserWindowShowReloadWarning": {
+   "prop": "Browser.AdditionalWindow.ShowReloadWarning",
+   "default": "false",
+   "inverted": false
+  },
+  "proxies": {
+   "prop": "Browser.Proxy.AutoConfigure",
+   "default": null,
+   "inverted": false
+  },
+  "proxySettingsPolicy": {
+   "prop": "Browser.Proxy.Policy",
+   "default": "ProxyPolicy.System",
+   "inverted": false
+  },
+  "quitURL": {
+   "prop": "Browser.QuitUrl",
+   "default": null,
+   "inverted": false
+  },
+  "quitURLConfirm": {
+   "prop": "Browser.ConfirmQuitUrl",
+   "default": null,
+   "inverted": false
+  },
+  "quitURLRestart": {
+   "prop": "Browser.ResetOnQuitUrl",
+   "default": "false",
+   "inverted": false
+  },
+  "removeBrowserProfile": {
+   "prop": "Browser.DeleteCacheOnShutdown",
+   "default": "true",
+   "inverted": false
+  },
+  "restartExamPasswordProtected": {
+   "prop": "Browser.HomeNavigationRequiresPassword",
+   "default": null,
+   "inverted": false
+  },
+  "restartExamText": {
+   "prop": "Browser.HomeNavigationMessage",
+   "default": null,
+   "inverted": false
+  },
+  "restartExamURL": {
+   "prop": "Browser.HomeUrl",
+   "default": null,
+   "inverted": false
+  },
+  "restartExamUseStartURL": {
+   "prop": "Browser.UseStartUrlAsHomeUrl",
+   "default": null,
+   "inverted": false
+  },
+  "sebConfigPurpose": {
+   "prop": "SessionMode",
+   "default": "SessionMode.Normal",
+   "inverted": false
+  },
+  "sebMode": {
+   "prop": "SessionMode",
+   "default": "SessionMode.Normal",
+   "inverted": false
+  },
+  "sebServerURL": {
+   "prop": "Server.ServerUrl",
+   "default": null,
+   "inverted": false
+  },
+  "sebServiceIgnore": {
+   "prop": "Service.IgnoreService",
+   "default": "true",
+   "inverted": false
+  },
+  "sendBrowserExamKey": {
+   "prop": "Browser.SendConfigurationKey",
+   "default": "false",
+   "inverted": false
+  },
+  "setVmwareConfiguration": {
+   "prop": "Service.SetVmwareConfiguration",
+   "default": "false",
+   "inverted": false
+  },
+  "showApplicationLogButton": {
+   "prop": "UserInterface.Taskbar.ShowApplicationLog",
+   "default": "false",
+   "inverted": false
+  },
+  "showInputLanguage": {
+   "prop": "UserInterface.ActionCenter.ShowKeyboardLayout",
+   "default": "true",
+   "inverted": false
+  },
+  "showReloadButton": {
+   "prop": "Browser.AdditionalWindow.ShowReloadButton",
+   "default": null,
+   "inverted": false
+  },
+  "showReloadWarning": {
+   "prop": "Browser.MainWindow.ShowReloadWarning",
+   "default": "true",
+   "inverted": false
+  },
+  "showSideMenu": {
+   "prop": "UserInterface.ActionCenter.EnableActionCenter",
+   "default": "true",
+   "inverted": false
+  },
+  "showTaskBar": {
+   "prop": "UserInterface.Taskbar.EnableTaskbar",
+   "default": "true",
+   "inverted": false
+  },
+  "showTime": {
+   "prop": "UserInterface.ActionCenter.ShowClock",
+   "default": "true",
+   "inverted": false
+  },
+  "startURL": {
+   "prop": "Browser.StartUrl",
+   "default": "\"https://www.safeexambrowser.org/start\"",
+   "inverted": false
+  },
+  "startURLAppendQueryParameter": {
+   "prop": "Browser.UseQueryParameter",
+   "default": "false",
+   "inverted": false
+  },
+  "touchOptimized": {
+   "prop": "UserInterface.Mode",
+   "default": "UserInterfaceMode.Desktop",
+   "inverted": false
+  },
+  "useTemporaryDownUploadDirectory": {
+   "prop": "Browser.UseTemporaryDownAndUploadDirectory",
+   "default": "false",
+   "inverted": false
+  },
+  "enableMiddleMouse": {
+   "prop": "Mouse.AllowMiddleButton",
+   "default": "false",
+   "inverted": false
+  }
+ }
+}
