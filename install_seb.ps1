@@ -69,9 +69,15 @@ $MIN_EXE_BYTES      = 1MB
 #     -> IntegrityModule.TryVerifyRuntimeIntegrity -> HandleApplicationIntegrityStatus
 #       -> "Application integrity is compromised!" -> LOCK SCREEN
 # Binary hasil patch tidak bertanda tangan, jadi verifikasi selalu GAGAL dan
-# lock muncul di menit 10-15. Artefak di bawah berisi 3 binary dengan method
-# integrity di-nonaktifkan (IL ditulis ulang: handler void -> ret, verifier
-# bool -> ldc.i4.1; ret). Ukuran body tetap, header method tidak digeser.
+# lock muncul di menit 10-15.
+#
+# CARA KERJA FIX (v2 - IL-safe):
+#   HANYA method PEMANGGIL yang void & TANPA blok try/catch yang diganti ret.
+#   Method verifier bool (TryVerifyCodeSignature dkk) TIDAK disentuh, karena
+#   keduanya punya klausa catch di offset kecil; ret di dalam try/catch = IL
+#   tidak valid -> "System.InvalidProgramException" saat startup (bug fix v1).
+#   Mematikan pemanggil sudah cukup: handler tak pernah dipanggil, timer tak
+#   pernah dijadwalkan. Setiap target diverifikasi void + EH=0 sebelum ditulis.
 #
 # CATATAN: patch_integrity_lock.py (versi lama) TIDAK bisa memperbaiki ini -
 # heuristiknya mencari nama method sebagai ASCII/UTF-16 (padahal .NET memakai
@@ -81,7 +87,12 @@ $MIN_EXE_BYTES      = 1MB
 $INTEGRITY_FIX_URL_BASE = 'https://raw.githubusercontent.com/harezadmm/seb-bypass/main/seb_integrity_fix.zip'
 $INTEGRITY_FIX_FALLBACK = 'https://github.com/harezadmm/seb-bypass/raw/main/seb_integrity_fix.zip'
 # TOFU, sama seperti $EXPECTED_PATCH_SHA256: jangkar terhadap isi repo ini.
-$INTEGRITY_FIX_SHA256   = '0DB7E0306B334D700D2C6EA909071B024D46F15D386494BB3E413B7DE5C67FEC'
+# Isi: SafeExamBrowser.exe + SafeExamBrowser.Client.exe (hasil patch v2) dan
+# SafeExamBrowser.Configuration.dll ASLI -- dll asli disertakan supaya
+# instalasi yang rusak akibat fix v1 (yang menulis ret ke dalam blok
+# try/catch TryVerifyCodeSignature -> InvalidProgramException saat startup)
+# ikut dipulihkan, bukan dibiarkan rusak.
+$INTEGRITY_FIX_SHA256   = '6CED6A0DBD7A11C3853B65B896CCBAC57DB3AAF7750F60C1E13745F314BD60FE'
 
 # Sumber utama installer: asset rilis resmi ETH Zurich. URL ini mengarah ke berkas
 # yang PERSIS sama dengan $EXPECTED_SETUP_SHA256 di bawah, jadi integritasnya

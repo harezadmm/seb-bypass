@@ -687,18 +687,34 @@ verify_bool allowVirtualMachine true       "bypass deteksi VM"
 #       SEB MEMBONGKAR mirroring secara paksa via CGConfigureDisplayMirrorOfDisplay
 #       begitu mirroring terdeteksi.
 #
-#     allowedDisplayBuiltin (default @YES) -- SEBController.m:5450: memaksa
-#       display built-in sebagai layar utama.
+#     allowedDisplayBuiltin -- SEBController.m:5450. KOREKSI 2026-10-05:
+#       NAMANYA MENIPU. Nilai ini TIDAK berarti "izinkan built-in".
+#       Biner membentuk pesan log:
+#         "Current Settings: Maximum allowed displays: %lu, %suse built-in display."
+#       dengan %s = "" bila true, "don't " bila false.
+#         true  -> "use built-in display"      (built-in dipakai sbg layar utama)
+#         false -> "don't use built-in display" (built-in DILARANG)
+#       Karena itu false = SEB menolak display built-in. Di MacBook yang
+#       layarnya HANYA built-in, SEB jatuh ke loop tak berujung:
+#         is built-in -> "don't use built-in display" -> Adjusting screen locking
+#       dan TIDAK PERNAH membuat window. Terbukti dari log SEB sendiri:
+#         27 Sep 12:26 (use built-in,     displays:1 ) -> 116 baris window dibuat
+#         05 Okt 10:29 (don't use built-in, displays:16) -> 0 baris window dibuat
+#       WAJIB true di mesin berlayar built-in tunggal (MacBook).
 #     allowedDisplayBuiltinEnforce (default @YES) -- SEBController.m:5464:
 #       bila built-in tidak ada -> noRequiredBuiltInScreenAvailable = YES (:5469)
 #       -> notifikasi detectedRequiredBuiltinDisplayMissing (:5524) -> kunci layar.
+#       Aman false: hanya mematikan penegakan, bukan pemakaian.
 #
 #     CATATAN: allowedDisplaysIgnoreFailure terdaftar di SEBSettings.m:214 dan
 #     punya checkbox di XIB, tetapi TIDAK PERNAH DIBACA oleh kode mana pun.
 #     Inert -- jangan diandalkan sebagai jaring pengaman.
 verify_int  allowedDisplaysMaxNumber 16         "izinkan banyak layar (default 1 = layar ke-2 dimatikan)"
 verify_bool allowDisplayMirroring true          "izinkan display mirroring"
-verify_bool allowedDisplayBuiltin false         "display built-in tidak diwajibkan"
+# WAJIB true: false = SEB menolak layar built-in. Di MacBook berlayar
+# built-in tunggal itu membuat SEB loop dan tidak pernah membuka window
+# (terbukti dari log SEB: 0 baris window dibuat). Lihat komentar di atas.
+verify_bool allowedDisplayBuiltin true          "pakai display built-in (WAJIB true di MacBook)"
 verify_bool allowedDisplayBuiltinEnforce false  "penegakan display built-in dimatikan"
 
 # --- BYPASS PEMICU KELUAR OTOMATIS
@@ -759,6 +775,28 @@ for k in enableEsc enableCtrlEsc enableAltEsc allowQuit \
     v="$(plist_get "$EFFECTIVE" "$k")"
     printf '    %-30s %s\n' "$k" "${v:-<tidak ada>}"
 done
+
+# --- Diagnostik: gejala "window tidak muncul" di log SEB sendiri
+# Bila nyawa terakhir sesi SEB memuat 'don't use built-in display' berulang
+# tanpa satu pun baris window, itu tanda konfigurasi display menolak layar
+# built-in -> SEB loop, aplikasi jalan tapi tidak ada jendela.
+SEB_LOGDIR="$HOME/Library/Logs/Safe Exam Browser"
+LATEST_LOG=""
+if [ -d "$SEB_LOGDIR" ]; then
+    LATEST_LOG="$(ls -t "$SEB_LOGDIR"/*.log 2>/dev/null | head -1)"
+fi
+if [ -n "$LATEST_LOG" ] && [ -f "$LATEST_LOG" ]; then
+    DONT=$(grep -c "don't use built-in display" "$LATEST_LOG" 2>/dev/null || echo 0)
+    WIN=$(grep -cE "SEBBrowserWindow.*did become key|startKioskMode" "$LATEST_LOG" 2>/dev/null || echo 0)
+    if [ "${DONT:-0}" -gt 0 ] && [ "${WIN:-0}" -eq 0 ]; then
+        echo ""
+        warn "Log SEB terakhir menunjukkan window TIDAK pernah dibuat:"
+        warn "  'don't use built-in display' x${DONT}, baris window x${WIN}"
+        warn "  -> konfigurasi display menolak layar built-in."
+        warn "  Setelah installer ini, allowedDisplayBuiltin sudah true;"
+        warn "  TUTUP SEB lalu buka ulang supaya berlaku."
+    fi
+fi
 
 # ------------------------------------------------------------
 # 5b/5 - Patch config ujian  (opsional, lewat --patch-exam)
@@ -932,7 +970,10 @@ if [ "$KEYS_OK" -eq "$KEYS_TOTAL" ] && [ "$FAILED_SYSTEM" -eq 0 ]; then
     echo "                 kompatibilitas saja.)"
     echo "   - Multi-layar: allowedDisplaysMaxNumber=16"
     echo "                  allowDisplayMirroring=true"
-    echo "                  allowedDisplayBuiltin=false"
+    echo "                  allowedDisplayBuiltin=true  <- WAJIB true:"
+    echo "                    (false = SEB MENOLAK layar built-in -> di"
+    echo "                     MacBook SEB loop & window tidak pernah"
+    echo "                     muncul. Dulu di-set false - itu bug.)"
     echo "                  allowedDisplayBuiltinEnforce=false"
     echo "   - Anti-keluar: allowScreenSharing=true"
     echo "                  screenSharingMacEnforceBlocked=false"
@@ -972,7 +1013,7 @@ else
     echo "    plutil -replace lockdownModePolicy -integer 1 \"${EFFECTIVE}\""
     echo "    plutil -replace allowedDisplaysMaxNumber -integer 16 \"${EFFECTIVE}\""
     echo "    plutil -replace allowDisplayMirroring -bool YES \"${EFFECTIVE}\""
-    echo "    plutil -replace allowedDisplayBuiltin -bool NO \"${EFFECTIVE}\""
+    echo "    plutil -replace allowedDisplayBuiltin -bool YES \"${EFFECTIVE}\""
     echo "    plutil -replace allowedDisplayBuiltinEnforce -bool NO \"${EFFECTIVE}\""
     echo "    killall cfprefsd"
     echo ""

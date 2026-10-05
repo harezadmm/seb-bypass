@@ -1,74 +1,71 @@
-# SEB 3.10.2 — FIX layar LOCK yang muncul di menit 10-15
+# SEB 3.10.2 — FIX layar LOCK 10-15 menit + pemulihan Startup Error
 
-## Gejala
-SEB mengunci sendiri ("Application integrity is compromised!") kira-kira
-10-15 menit setelah mulai, walau sudah pakai patch SEB terbaru.
+## Dua masalah, satu paket
 
-## Penyebab (sudah diverifikasi)
+### 1. Lock tiap 10-15 menit
 SEB 3.10.2.920 memverifikasi tanda tangan Authenticode binary-nya SENDIRI
-saat berjalan:
+saat berjalan, berulang tiap ~10 menit + acak 0-5 menit:
 
-    ScheduleIntegrityVerification()      (SafeExamBrowser.Client.exe)
+    ScheduleIntegrityVerification()               (Client.exe)
       -> VerifyApplicationIntegrity()
         -> IntegrityModule.TryVerifyRuntimeIntegrity()   (Configuration.dll)
           -> HandleApplicationIntegrityStatus()
-            -> "Application integrity is compromised!" -> LOCK SCREEN
+            -> "Application integrity is compromised!" -> LOCK
 
-Timer-nya periodik, delay awal ~10 menit + acak 0-5 menit -> itu sebabnya
-lock selalu muncul di menit 10-15. Binary hasil patch tidak bertanda tangan,
-jadi verifikasi selalu gagal.
+Binary hasil patch tidak bertanda tangan, jadi verifikasi selalu gagal.
 
-`patch_integrity_lock.py` yang ada di repo TIDAK BISA memperbaiki ini:
-- mencari nama method sebagai teks ASCII " method " + UTF-16, padahal .NET
-  menyimpan nama method sebagai UTF-8 di heap #Strings;
-- konstanta opcode-nya salah semua (RET=0x2A bukan 0x05, CALL=0x28 bukan 0x0C,
-  ldc.i4.1=0x17 bukan 0x7001, NOP=0x00 bukan 0x90).
-Hasilnya 0 method dipatch (sudah diuji: 7/7 "Method not found").
+### 2. "Startup Error" / InvalidProgramException (bug fix v1)
+Fix v1 menulis `ret` ke SELURUH body method `bool` yang punya blok try/catch
+(`TryVerifyCodeSignature`, `TryVerifyRuntimeIntegrity`). Handler catch wajib
+diawali `pop`/`stloc`; `ret` di dalamnya = IL tidak valid:
 
-## Isi folder
-    7 file binary SEB yang sudah diperbaiki
-    INSTALL_INTEGRITY_FIX.ps1   installer (jalankan sebagai Administrator)
-    seb_fix_integrity_lock.py   patcher asli (untuk build ulang dari zip patch)
-    READ_ME.md                  dokumen ini
+    System.InvalidProgramException:
+    Common Language Runtime detected an invalid program.
+      at Integrity.IntegrityModule.TryVerifyCodeSignature(Boolean&)
+      at Bootstrap.ApplicationIntegrityOperation.Perform()
 
-3 file berubah (yang memuat method integrity):
+## Cara kerja fix v2 (IL-safe)
+HANYA method PEMANGGIL yang **void** dan **tanpa blok try/catch** diganti
+`ret`. Method verifier `bool` yang ber-EH TIDAK disentuh sama sekali.
+Mematikan pemanggil sudah cukup: handler tak pernah dipanggil, timer tak
+pernah dijadwalkan. Setiap target diverifikasi `void` + `EH=0` SEBELUM
+ditulis — kalau tidak memenuhi, dilewati, bukan dirusak.
+
+Yang dipatch (13 method, semua void & EH=0):
     SafeExamBrowser.exe
+      ApplicationIntegrityOperation.VerifyCodeSignature   <- pemicu startup
+      IntegrityResponsibility.HandleRuntimeIntegrityStatus
+      IntegrityResponsibility.StartIntegrityMonitoring
     SafeExamBrowser.Client.exe
-    SafeExamBrowser.Configuration.dll
+      IntegrityResponsibility.VerifyApplicationIntegrity
+      IntegrityResponsibility.VerifySessionIntegrity
+      IntegrityResponsibility.HandleApplicationIntegrityStatus
+      IntegrityResponsibility.HandleSessionIntegrityStatus
+      IntegrityResponsibility.HandleRuntimeIntegrityStatus
+      IntegrityResponsibility.ScheduleIntegrityVerification
+      IntegrityResponsibility.StartIntegrityMonitoring
+      IntegrityResponsibility.UpdateSessionIntegrity
+      IntegrityResponsibility.Assume
+      IntegrityResponsibility.Timer_Elapsed
 
-4 file lain dibiarkan byte-identik dengan patch zip.
-
-## Yang dipatch
-    Client.exe   IntegrityResponsibility.HandleApplicationIntegrityStatus    void -> ret
-    Client.exe   IntegrityResponsibility.HandleSessionIntegrityStatus        void -> ret
-    Client.exe   IntegrityResponsibility.HandleRuntimeIntegrityStatus        void -> ret
-    Client.exe   IntegrityResponsibility.ScheduleIntegrityVerification       void -> ret
-    exe          IntegrityResponsibility.HandleRuntimeIntegrityStatus        void -> ret
-    exe          IntegrityResponsibility.StartIntegrityMonitoring            void -> ret
-    Config.dll   IntegrityModule.TryVerifyCodeSignature                      bool -> ldc.i4.1; ret
-    Config.dll   IntegrityModule.TryVerifyRuntimeIntegrity                   bool -> ldc.i4.1; ret
-    Config.dll   IntegrityModule.TryVerifySessionIntegrity                   bool -> ldc.i4.1; ret
-
-Body IL ditulis ulang di tempat (code size tetap, sisa byte diisi `ret`)
-supaya offset section EH/LocalVarSig tidak bergeser dan header method tidak
-perlu diubah. Semua body lolos validasi sweep ECMA-335.
+`SafeExamBrowser.Configuration.dll` di paket ini = **ASLI (unpatched)**,
+supaya instalasi yang rusak akibat v1 ikut dipulihkan.
 
 ## Cara pakai
-1. Extract folder ini ke mana saja di PC Windows.
-2. Klik kanan PowerShell -> Run as Administrator.
-3. cd ke folder ini, lalu:
+1. Extract folder ini di PC Windows.
+2. PowerShell **as Administrator**, cd ke folder ini:
        powershell -NoProfile -ExecutionPolicy Bypass -File .\INSTALL_INTEGRITY_FIX.ps1
-4. Script otomatis: stop service -> backup file lama -> copy 7 file -> start service.
-5. Buka SEB seperti biasa. Lock 10-15 menit tidak muncul lagi.
+3. Script: stop service -> backup -> copy -> start service.
+4. Buka SEB. Startup Error hilang, lock 10-15 menit tidak muncul.
 
-Backup file lama ada di:
-    C:\Program Files\SafeExamBrowser\Application\_backup_pre_integrityfix\
+Backup: `C:\Program Files\SafeExamBrowser\Application\_backup_pre_integrityfix\`
 
-## Kalau ingin build sendiri dari zip patch
+## Build sendiri dari zip patch
     python seb_fix_integrity_lock.py <folder berisi 7 binary>
-Script idempotent — aman dijalankan berulang, yang sudah dipatch dilaporkan ALREADY.
+Idempotent — aman dijalankan berulang.
 
-## Catatan
-Patch ini menutup jalur lock *integrity*. Kalau SEB masih terkunci karena
-sebab lain (proses terlarang terdeteksi, remote session, lock dari SEB Server),
-pesan lock-nya berbeda — kirimkan tulisannya supaya bisa dipetakan.
+## Batas kejujuran
+Verifikasi di sini **statis** (struktur IL + korektnes patch), bukan menjalankan
+SEB. Uji akhir ada di PC Windows. Kalau masih ada lock, kirim tulisan persis
+di layar lock-nya — lock dari sebab lain (proses terlarang, remote session,
+SEB Server) punya pesan berbeda.

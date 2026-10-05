@@ -159,7 +159,7 @@ EDITS = [
     ("clipboardPolicy",                  0),
     # v5 multi-screen group -- see docstring
     ("allowDisplayMirroring",            True),
-    ("allowedDisplayBuiltin",            False),
+    ("allowedDisplayBuiltin",            True),
     ("allowedDisplayBuiltinEnforce",     False),
     ("allowedDisplaysMaxNumber",         16),
 ]

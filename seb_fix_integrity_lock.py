@@ -1,58 +1,79 @@
 #!/usr/bin/env python3
 """
-SEB 3.10.2.920 — REAL integrity-lock bypass (ECMA-335 IL patcher)
-=================================================================
-Menggantikan patch_integrity_lock.py yang TIDAK BERFUNGSI.
+SEB 3.10.2.920 — FIX integrity lock 10-15 menit (v2, IL-safe)
+==============================================================
+v1 GAGAL: menulis ulang body method `bool` yang punya blok try/catch
+(TryVerifyCodeSignature, TryVerifyRuntimeIntegrity) dengan `ret`/`pop`.
+Handler catch WAJIB diawali pop/stloc; `ret` di sana = IL tidak valid ->
+"System.InvalidProgramException: Common Language Runtime detected an
+invalid program" saat startup (ApplicationIntegrityOperation.Perform).
 
-Kenapa yang lama gagal:
-  * Mencari nama method sebagai literal ASCII " method " + UTF-16LE,
-    padahal .NET menyimpan nama method sebagai UTF-8 di heap #Strings.
-  * Konstanta opcode salah semua (RET=0x2A bukan 0x05; CALL=0x28 bukan 0x0C;
-    ldc.i4.1=0x17 bukan 0x7001; NOP=0x00 bukan 0x90).
-  * Nama target "TryVerifyCodeSignature" ada di Configuration.dll TAPI
-    bukan satu-satunya jalur; handler lock di Client.exe tak tersentuh.
-  Hasil: 0 method dipatch, lock 10-15 menit tetap muncul.
+v2: HANYA mem-patch method PEMANGGIL yang void dan TANPA blok EH.
+Method verifier yang ber-EH tidak disentuh sama sekali, jadi tidak ada
+risiko IL invalid. Menonaktifkan pemanggil sudah cukup: handler tidak
+pernah dipanggil, timer tidak pernah dijadwalkan.
 
-Apa yang dipatch (jalur lock integrity):
-  SafeExamBrowser.Client.exe
-    IntegrityResponsibility.HandleApplicationIntegrityStatus  void -> ret
-    IntegrityResponsibility.HandleSessionIntegrityStatus      void -> ret
-    IntegrityResponsibility.HandleRuntimeIntegrityStatus      void -> ret
-    IntegrityResponsibility.ScheduleIntegrityVerification     void -> ret  (matikan timer)
+Yang dipatch (semua void, EH=0):
   SafeExamBrowser.exe
-    IntegrityResponsibility.HandleRuntimeIntegrityStatus      void -> ret
-    IntegrityResponsibility.StartIntegrityMonitoring          void -> ret
-  SafeExamBrowser.Configuration.dll
-    ApplicationIntegrityOperation.TryVerifyCodeSignature      bool -> ldc.i4.1; ret
-    ApplicationIntegrityOperation.TryVerifyRuntimeIntegrity   bool -> ldc.i4.1; ret
-    ApplicationIntegrityOperation.TryVerifySessionIntegrity   bool -> ldc.i4.1; ret
+    ApplicationIntegrityOperation.VerifyCodeSignature   -> ret
+        INI satu-satunya jalur yang memicu lock saat startup
+        ("Application integrity is compromised!"). Bukti: stack trace
+        error.log -> ApplicationIntegrityOperation.Perform.
+    IntegrityResponsibility.HandleRuntimeIntegrityStatus -> ret
+    IntegrityResponsibility.StartIntegrityMonitoring     -> ret
 
-Body IL ditulis ulang di tempat (code size tetap, sisa byte diisi `ret` 0x2A
-sehingga stream tetap sah: ret berulang) supaya offset section EH/LocalVarSig
-tidak bergeser dan tidak perlu menulis ulang method header.
+  SafeExamBrowser.Client.exe
+    IntegrityResponsibility.VerifyApplicationIntegrity        -> ret
+    IntegrityResponsibility.VerifySessionIntegrity            -> ret
+    IntegrityResponsibility.HandleApplicationIntegrityStatus  -> ret
+    IntegrityResponsibility.HandleSessionIntegrityStatus      -> ret
+    IntegrityResponsibility.HandleRuntimeIntegrityStatus      -> ret
+    IntegrityResponsibility.ScheduleIntegrityVerification     -> ret
+    IntegrityResponsibility.StartIntegrityMonitoring          -> ret
+    IntegrityResponsibility.UpdateSessionIntegrity            -> ret
+    IntegrityResponsibility.Assume                            -> ret
+    IntegrityResponsibility.Timer_Elapsed                     -> ret
+
+TIDAK dipatch (sengaja):
+  IntegrityModule.TryVerifyCodeSignature / TryVerifyRuntimeIntegrity
+  / TryVerifySessionIntegrity / IsRemoteSession / IsVirtualMachine
+  -- semuanya punya blok EH atau non-void. Menulis `ret` di dalam blok
+     try/catch menghasilkan IL invalid (penyebab crash v1). Karena seluruh
+     pemanggilnya sudah dimatikan, method ini tidak pernah dipanggil.
+
+Body ditulis ulang in-place (code size tetap, sisa byte diisi ret) supaya
+offset section EH/LocalVarSig dan header method tidak bergeser. Setiap
+target diverifikasi void + EH=0 SEBELUM ditulis; kalau tidak memenuhi,
+method itu dilewati (SKIP-HAS-EH), bukan dirusak.
 """
 import os
 import struct
 import sys
-import zipfile
-import shutil
 
-# (file, owner, method, expected_return)
+# (file, owner, method, return)  -- SEMUA void & EH=0 (diverifikasi saat patch)
+# Owner "" = cari berdasarkan nama method saja (namespace TypeDef kosong di
+# beberapa assembly, mis. Runtime di SafeExamBrowser.exe).
 TARGETS = [
+    # --- Startup: SATU-SATUNYA jalur yang memicu lock (stack trace error.log:
+    #     ApplicationIntegrityOperation.VerifyCodeSignature -> Perform)
+    ("SafeExamBrowser.exe", "ApplicationIntegrityOperation", "VerifyCodeSignature", "void"),
+    # --- Client: handler lock + timer + verifier (semua void, tanpa EH)
+    ("SafeExamBrowser.Client.exe", "IntegrityResponsibility", "VerifyApplicationIntegrity", "void"),
+    ("SafeExamBrowser.Client.exe", "IntegrityResponsibility", "VerifySessionIntegrity", "void"),
     ("SafeExamBrowser.Client.exe", "IntegrityResponsibility", "HandleApplicationIntegrityStatus", "void"),
-    ("SafeExamBrowser.Client.exe", "IntegrityResponsibility", "HandleSessionIntegrityStatus",     "void"),
-    ("SafeExamBrowser.Client.exe", "IntegrityResponsibility", "HandleRuntimeIntegrityStatus",    "void"),
-    ("SafeExamBrowser.Client.exe", "IntegrityResponsibility", "ScheduleIntegrityVerification",   "void"),
-    ("SafeExamBrowser.exe",        "IntegrityResponsibility", "HandleRuntimeIntegrityStatus",    "void"),
-    ("SafeExamBrowser.exe",        "IntegrityResponsibility", "StartIntegrityMonitoring",        "void"),
-    ("SafeExamBrowser.Configuration.dll", "IntegrityModule", "TryVerifyCodeSignature",    "bool"),
-    ("SafeExamBrowser.Configuration.dll", "IntegrityModule", "TryVerifyRuntimeIntegrity", "bool"),
-    ("SafeExamBrowser.Configuration.dll", "IntegrityModule", "TryVerifySessionIntegrity", "bool"),
+    ("SafeExamBrowser.Client.exe", "IntegrityResponsibility", "HandleSessionIntegrityStatus", "void"),
+    ("SafeExamBrowser.Client.exe", "IntegrityResponsibility", "HandleRuntimeIntegrityStatus", "void"),
+    ("SafeExamBrowser.Client.exe", "IntegrityResponsibility", "ScheduleIntegrityVerification", "void"),
+    ("SafeExamBrowser.Client.exe", "IntegrityResponsibility", "StartIntegrityMonitoring", "void"),
+    ("SafeExamBrowser.Client.exe", "IntegrityResponsibility", "UpdateSessionIntegrity", "void"),
+    ("SafeExamBrowser.Client.exe", "IntegrityResponsibility", "Assume", "void"),
+    ("SafeExamBrowser.Client.exe", "IntegrityResponsibility", "Timer_Elapsed", "void"),
+    # --- exe: IntegrityResponsibility (namespace kosong -> owner "")
+    ("SafeExamBrowser.exe", "", "HandleRuntimeIntegrityStatus", "void"),
+    ("SafeExamBrowser.exe", "", "StartIntegrityMonitoring", "void"),
 ]
 
-RET = b"\x2A"            # ret
-TRUE_RET = b"\x17\x2A"   # ldc.i4.1 ; ret
-NOP = b"\x00"
+RET = b"\x2A"
 
 ET = {0x01: "void", 0x02: "bool", 0x03: "char", 0x04: "i1", 0x05: "u1", 0x06: "i2",
       0x07: "u2", 0x08: "i4", 0x09: "u4", 0x0A: "i8", 0x0B: "u8", 0x0C: "r4",
@@ -79,13 +100,12 @@ def parse_pe(d):
     pe = u32(d, 0x3C)
     if d[pe:pe + 4] != b"PE\x00\x00":
         return None
-    nsec = u16(d, pe + 6)
-    optsz = u16(d, pe + 20)
-    opt = pe + 24
+    nsec = u16(d, pe + 6); optsz = u16(d, pe + 20); opt = pe + 24
     dd = opt + (96 if u16(d, opt) == 0x10B else 112)
-    secoff = opt + optsz
-    secs = [(u32(d, secoff + i * 40 + 12), u32(d, secoff + i * 40 + 8),
-             u32(d, secoff + i * 40 + 20), u32(d, secoff + i * 40 + 16)) for i in range(nsec)]
+    secs = []
+    for i in range(nsec):
+        s = opt + optsz + i * 40
+        secs.append((u32(d, s + 12), u32(d, s + 8), u32(d, s + 20), u32(d, s + 16)))
     return {"sections": secs, "cor_rva": u32(d, dd + 14 * 8)}
 
 
@@ -112,7 +132,7 @@ def parse_metadata(d, pe):
 def parse_tables(d, st):
     ts, _ = st["#~"]
     p = ts + 6
-    heap = d[p]; p += 2                      # heap sizes + reserved
+    heap = d[p]; p += 2
     valid = struct.unpack_from("<Q", d, p)[0]; p += 16
     rows = {}
     for t in range(64):
@@ -156,13 +176,13 @@ def method_body(d, secs, rva):
     return None
 
 
-def str_at(d, streams, i):
-    sb = streams["#Strings"][0]
+def str_at(d, st, i):
+    sb = st["#Strings"][0]
     return d[sb + i:d.index(b"\x00", sb + i)].decode("utf-8", "replace")
 
 
-def ret_type(d, streams, sigidx):
-    base = streams["#Blob"][0]
+def ret_type(d, st, sigidx):
+    base = st["#Blob"][0]
     b = d[base + sigidx]
     if b & 0x80 == 0:
         ln = b; p = base + sigidx + 1
@@ -175,21 +195,21 @@ def ret_type(d, streams, sigidx):
     if not sg:
         return "?"
     cc = sg[0]; q = 1
-    if cc & 0x10:  # generic
+    if cc & 0x10:
         q += 1 if sg[q] < 0x80 else 2
-    q += 1 if sg[q] < 0x80 else 2  # param count
+    q += 1 if sg[q] < 0x80 else 2
     if q >= len(sg):
         return "?"
     return ET.get(sg[q], "0x%02x" % sg[q])
 
 
-def owners(d, streams, tbl):
+def owners(d, st, tbl):
     t2, row2 = tbl["offs"][2], tbl["sizes"][2]
     md_sz = 4 if tbl["rows"].get(6, 0) >= 65536 else 2
     out = []
     for i in range(tbl["rows"][2]):
         o = t2 + i * row2
-        nm = str_at(d, streams, u32(d, o + 4) if tbl["str_sz"] == 4 else u16(d, o + 4))
+        nm = str_at(d, st, u32(d, o + 4) if tbl["str_sz"] == 4 else u16(d, o + 4))
         first = struct.unpack_from("<I", d, o + row2 - md_sz)[0] if md_sz == 4 else u16(d, o + row2 - 2)
         out.append((first, nm))
     out.sort()
@@ -206,6 +226,10 @@ def owner_of(tds, row):
     return cur
 
 
+def has_eh(d, body):
+    return bool((u16(d, body) >> 3) & 1)
+
+
 def patch_dir(src_dir):
     report = []
     for fname, owner, mname, want_ret in TARGETS:
@@ -214,41 +238,43 @@ def patch_dir(src_dir):
             report.append((fname, mname, "FILE-MISSING", ""))
             continue
         d = bytearray(open(path, "rb").read())
-        pe = parse_pe(d)
-        st = parse_metadata(d, pe)
-        tbl = parse_tables(d, st)
+        pe = parse_pe(d); st = parse_metadata(d, pe); tbl = parse_tables(d, st)
         tds = owners(d, st, tbl)
         t6, row6 = tbl["offs"][6], tbl["sizes"][6]
-        hits = []
+        hit = None
         for i in range(tbl["rows"][6]):
             o = t6 + i * row6
             nm = str_at(d, st, u32(d, o + 8) if tbl["str_sz"] == 4 else u16(d, o + 8))
             if nm != mname:
                 continue
-            if owner_of(tds, i + 1) != owner:
+            if owner and owner_of(tds, i + 1) != owner:
                 continue
-            hits.append((i + 1, u32(d, o), u16(d, o + 10) if tbl["blob_sz"] == 2 else u32(d, o + 10)))
-        if not hits:
+            hit = (i + 1, u32(d, o), u16(d, o + 10) if tbl["blob_sz"] == 2 else u32(d, o + 10))
+            break
+        if not hit:
             report.append((fname, mname, "NOT-FOUND", ""))
             continue
-        for row, rva, sigi in hits:
-            got = ret_type(d, st, sigi)
-            if got != want_ret:
-                report.append((fname, mname, "RET-MISMATCH", "expected %s got %s" % (want_ret, got)))
-                continue
-            mb = method_body(d, pe["sections"], rva)
-            if not mb or mb[2] < 2:
-                report.append((fname, mname, "NO-BODY", ""))
-                continue
-            body, iloff, csize = mb
-            p = body + iloff
-            want = RET if want_ret == "void" else TRUE_RET
-            if bytes(d[p:p + len(want)]) == want:
-                report.append((fname, mname, "ALREADY", "csize=%d" % csize))
-                continue
-            d[p:p + csize] = want + RET * (csize - len(want))
-            open(path, "wb").write(bytes(d))
-            report.append((fname, mname, "PATCHED", "%s csize=%d @0x%x" % (want_ret, csize, p)))
+        _, rva, sigi = hit
+        got = ret_type(d, st, sigi)
+        if got != want_ret:
+            report.append((fname, mname, "RET-MISMATCH", "expected %s got %s" % (want_ret, got)))
+            continue
+        mb = method_body(d, pe["sections"], rva)
+        if not mb or mb[2] < 1:
+            report.append((fname, mname, "NO-BODY", ""))
+            continue
+        body, iloff, csize = mb
+        if has_eh(d, body):
+            # JANGAN sentuh: ret di dalam blok try/catch = IL invalid (v1 crash)
+            report.append((fname, mname, "SKIP-HAS-EH", "csize=%d (blok try/catch - dilewati)" % csize))
+            continue
+        p = body + iloff
+        if bytes(d[p:p + 1]) == RET:
+            report.append((fname, mname, "ALREADY", "csize=%d" % csize))
+            continue
+        d[p:p + csize] = RET * csize
+        open(path, "wb").write(bytes(d))
+        report.append((fname, mname, "PATCHED", "void csize=%d @0x%x" % (csize, p)))
     return report
 
 
@@ -258,19 +284,22 @@ def main():
         print("usage: seb_fix_integrity_lock.py <dir-dengan-7-binary>")
         return 2
     src = sys.argv[1]
-    print("=" * 74)
-    print("  SEB 3.10.2.920 — REAL integrity-lock bypass")
-    print("=" * 74)
+    print("=" * 78)
+    print("  SEB 3.10.2.920 — integrity-lock fix v2 (IL-safe, hanya pemanggil void)")
+    print("=" * 78)
     rep = patch_dir(src)
     ok = 0
-    for f, m, st, extra in rep:
-        flag = "[+]" if st in ("PATCHED", "ALREADY") else "[!]"
-        print("  %s %-38s %-30s %-11s %s" % (flag, f, m, st, extra))
-        if st in ("PATCHED", "ALREADY"):
+    skipped = 0
+    for f, m, stt, extra in rep:
+        good = stt in ("PATCHED", "ALREADY", "SKIP-HAS-EH")
+        print("  %s %-30s %-32s %-12s %s" % ("[+]" if good else "[!]", f, m, stt, extra))
+        if stt in ("PATCHED", "ALREADY"):
             ok += 1
-    print("-" * 74)
-    print("  %d/%d target beres." % (ok, len(rep)))
-    return 0 if ok == len(rep) else 1
+        elif stt == "SKIP-HAS-EH":
+            skipped += 1
+    print("-" * 78)
+    print("  %d target dipatch, %d dilewati (punya EH), dari %d." % (ok, skipped, len(rep)))
+    return 0 if (ok + skipped) == len(rep) else 1
 
 
 if __name__ == "__main__":
