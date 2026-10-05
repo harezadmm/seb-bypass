@@ -92,7 +92,7 @@ $INTEGRITY_FIX_FALLBACK = 'https://github.com/harezadmm/seb-bypass/raw/main/seb_
 # instalasi yang rusak akibat fix v1 (yang menulis ret ke dalam blok
 # try/catch TryVerifyCodeSignature -> InvalidProgramException saat startup)
 # ikut dipulihkan, bukan dibiarkan rusak.
-$INTEGRITY_FIX_SHA256   = '68C1BFC08E9D934F46E63FCF65A1091A284D3071090EBCA321BCBDCA512CDE32'
+$INTEGRITY_FIX_SHA256   = '68C1BFC08E9D934F46E63FCF65A1091A284D3071090EBCA321BCDBCA512CDE32'
 
 # Sumber utama installer: asset rilis resmi ETH Zurich. URL ini mengarah ke berkas
 # yang PERSIS sama dengan $EXPECTED_SETUP_SHA256 di bawah, jadi integritasnya
