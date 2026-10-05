@@ -34,6 +34,25 @@ Yang dipatch (semua void, EH=0):
     IntegrityResponsibility.Assume                            -> ret
     IntegrityResponsibility.Timer_Elapsed                     -> ret
 
+  SafeExamBrowser.Client.exe -- SEMUA 6 jalur ShowLockScreen di
+  MonitoringResponsibility (audit source; 4 sudah dijaga kunci config,
+  1 TIDAK punya kunci sama sekali):
+    ApplicationMonitor_TerminationFailed      -> ret   <-- TANPA kunci config!
+        MonitoringResponsibility.cs:142-150 memanggil ShowLockScreen tanpa
+        RequestSessionLock dan tanpa setting apa pun. Dijaga hanya oleh
+        kenyataan bahwa daftar terlarang tidak pernah menghasilkan
+        kegagalan terminasi. Satu-satunya penutup: patch biner ini.
+    DisplayMonitor_DisplaySettingsChanged     -> ret   (allowedDisplays*)
+    Sentinel_CursorChanged                    -> ret   (enableCursorVerification)
+    Sentinel_EaseOfAccessChanged              -> ret   (sebServiceIgnore)
+    Sentinel_SessionChanged                   -> ret   (disableSessionChangeLockScreen)
+    Sentinel_StickyKeysChanged                -> ret   (allowStickyKeys)
+
+  Dua jalur lain (IntegrityResponsibility.HandleSessionIntegrityStatus dan
+  ServerResponsibility.Server_LockScreenRequested) ikut tertutup: yang pertama
+  lewat patch, yang kedua hanya aktif di SessionMode.Server (sebMode=1) dan
+  config ujian memakai sebMode=0.
+
 TIDAK dipatch (sengaja):
   IntegrityModule.TryVerifyCodeSignature / TryVerifyRuntimeIntegrity
   / TryVerifySessionIntegrity / IsRemoteSession / IsVirtualMachine
@@ -68,6 +87,16 @@ TARGETS = [
     ("SafeExamBrowser.Client.exe", "IntegrityResponsibility", "UpdateSessionIntegrity", "void"),
     ("SafeExamBrowser.Client.exe", "IntegrityResponsibility", "Assume", "void"),
     ("SafeExamBrowser.Client.exe", "IntegrityResponsibility", "Timer_Elapsed", "void"),
+    # --- Client: SEMUA 6 jalur ShowLockScreen di MonitoringResponsibility.
+    #     Termasuk ApplicationMonitor_TerminationFailed yang TIDAK punya kunci
+    #     config sama sekali (tanpa RequestSessionLock, tanpa setting) ---
+    #     satu-satunya cara menutupnya adalah di level biner.
+    ("SafeExamBrowser.Client.exe", "MonitoringResponsibility", "ApplicationMonitor_TerminationFailed", "void"),
+    ("SafeExamBrowser.Client.exe", "MonitoringResponsibility", "DisplayMonitor_DisplaySettingsChanged", "void"),
+    ("SafeExamBrowser.Client.exe", "MonitoringResponsibility", "Sentinel_CursorChanged", "void"),
+    ("SafeExamBrowser.Client.exe", "MonitoringResponsibility", "Sentinel_EaseOfAccessChanged", "void"),
+    ("SafeExamBrowser.Client.exe", "MonitoringResponsibility", "Sentinel_SessionChanged", "void"),
+    ("SafeExamBrowser.Client.exe", "MonitoringResponsibility", "Sentinel_StickyKeysChanged", "void"),
     # --- exe: IntegrityResponsibility (namespace kosong -> owner "")
     ("SafeExamBrowser.exe", "", "HandleRuntimeIntegrityStatus", "void"),
     ("SafeExamBrowser.exe", "", "StartIntegrityMonitoring", "void"),
