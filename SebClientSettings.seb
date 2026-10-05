@@ -109,7 +109,7 @@
 	<key>browserShowFileSystemElementPath</key>
 	<true/>
 	<key>browserURLSalt</key>
-	<true/>
+	<false/>
 	<key>browserUserAgent</key>
 	<string></string>
 	<key>browserUserAgentMac</key>
