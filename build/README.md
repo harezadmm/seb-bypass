@@ -67,7 +67,33 @@ SmartScreen mungkin memperingatkan karena belum ditandatangani:
 
 ## Otomatis lewat GitHub Actions
 
-Workflow `.github/workflows/build.yml` membangun **keduanya** di cloud:
+Workflow siap pakai ada di **`build/ci/build.yml`**. File ini dibangun dan
+diuji sebagai YAML, tapi belum aktif sebagai workflow karena token yang
+dipakai untuk push tidak punya scope `workflow` (GitHub menolak
+`.github/workflows/*` tanpa scope itu).
+
+**Aktifkan (sekali saja):**
+
+```bash
+mkdir -p .github/workflows
+cp build/ci/build.yml .github/workflows/build.yml
+git add .github/workflows/build.yml
+git commit -m "ci: aktifkan build workflow"
+git push
+```
+
+Kalau push ditolak dengan pesan
+*"refusing to allow an OAuth App to create or update workflow"*, tambahkan
+scope `workflow` ke token:
+
+```bash
+gh auth refresh -s workflow      # lalu ikuti instruksi di browser
+```
+
+Atau tempel file itu lewat web GitHub:
+**Add file → Create new file → `.github/workflows/build.yml`**.
+
+**Setelah aktif:**
 
 - Jalan otomatis kalau ada tag `v*`
 - Bisa dipicu manual: tab **Actions** → **build-gui** → **Run workflow**
@@ -86,6 +112,10 @@ git push origin v1.0.0
 Setiap job menjalankan **smoke test headless** dulu (memuat config contoh,
 menerapkan preset, memastikan output terbentuk) sebelum mengunggah artifact.
 
+> Catatan: smoke test Windows memakai `Start-Process -Wait` karena `.exe` ini
+> GUI (`console=False`) dan PowerShell **tidak** menunggu aplikasi GUI kalau
+> dipanggil dengan `&`, sehingga test bisa lolos/gagal palsu.
+
 ---
 
 ## Ikon
@@ -103,6 +133,7 @@ python make_icon.py     # butuh pillow
 
 ```
 build/
+├── ci/build.yml            workflow GitHub Actions (salin ke .github/workflows/)
 ├── seb_bypass_gui.spec     spec PyInstaller (dipakai kedua platform)
 ├── build_mac.sh            build macOS
 ├── build_windows.ps1       build Windows
