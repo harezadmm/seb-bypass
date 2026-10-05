@@ -5,3 +5,12 @@ SafeExamBrowser-*.dmg
 # Local edit backups
 *.bak
 *.bak-*
+
+# Build artifacts GUI (dibuat oleh build/build_mac.sh / build_windows.ps1)
+build/dist/
+build/build/
+build/.venv/
+build/*.dmg
+build/*.exe
+build/__pycache__/
+build/sebstudio.iconset/
