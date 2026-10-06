@@ -354,7 +354,7 @@
 	<array>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -366,7 +366,7 @@
 			<key>originalName</key>
 			<string>Guilded.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -376,7 +376,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -388,7 +388,7 @@
 			<key>originalName</key>
 			<string>sethc.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -398,7 +398,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -410,7 +410,7 @@
 			<key>originalName</key>
 			<string>vlc.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -420,7 +420,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -432,7 +432,7 @@
 			<key>originalName</key>
 			<string>Microsoft.Media.Player.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -442,7 +442,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -454,7 +454,7 @@
 			<key>originalName</key>
 			<string>spotify.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -464,7 +464,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -476,7 +476,7 @@
 			<key>originalName</key>
 			<string>obs32.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -486,7 +486,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -498,7 +498,7 @@
 			<key>originalName</key>
 			<string>obs64.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -508,7 +508,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -520,7 +520,7 @@
 			<key>originalName</key>
 			<string>pcmontask.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -530,7 +530,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -542,7 +542,7 @@
 			<key>originalName</key>
 			<string>PCMonitorSrv.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -552,7 +552,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -564,7 +564,7 @@
 			<key>originalName</key>
 			<string>strwinclt.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -574,7 +574,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -586,7 +586,7 @@
 			<key>originalName</key>
 			<string>SRServer.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -596,7 +596,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -608,7 +608,7 @@
 			<key>originalName</key>
 			<string>remoting_host.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -618,7 +618,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -630,7 +630,7 @@
 			<key>originalName</key>
 			<string>CiscoWebExStart.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -640,7 +640,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -652,7 +652,7 @@
 			<key>originalName</key>
 			<string>CiscoCollabHost.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -662,7 +662,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -674,7 +674,7 @@
 			<key>originalName</key>
 			<string>AA_v3.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -684,7 +684,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -696,7 +696,7 @@
 			<key>originalName</key>
 			<string>ptoneclk.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -706,7 +706,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -718,7 +718,7 @@
 			<key>originalName</key>
 			<string>webexmta.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -728,7 +728,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -740,7 +740,7 @@
 			<key>originalName</key>
 			<string>MS-Teams.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -750,7 +750,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -762,7 +762,7 @@
 			<key>originalName</key>
 			<string>Teams.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -772,7 +772,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -784,7 +784,7 @@
 			<key>originalName</key>
 			<string>join.me.sentinel.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -794,7 +794,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -806,7 +806,7 @@
 			<key>originalName</key>
 			<string>join.me.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -816,7 +816,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -828,7 +828,7 @@
 			<key>originalName</key>
 			<string>g2mstart.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -838,7 +838,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -850,7 +850,7 @@
 			<key>originalName</key>
 			<string>g2mlauncher.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -860,7 +860,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -872,7 +872,7 @@
 			<key>originalName</key>
 			<string>g2mcomm.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -882,7 +882,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -894,7 +894,7 @@
 			<key>originalName</key>
 			<string>Telegram.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -904,7 +904,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -916,7 +916,7 @@
 			<key>originalName</key>
 			<string>Zoom.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -926,7 +926,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -938,7 +938,7 @@
 			<key>originalName</key>
 			<string>Element.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -948,7 +948,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -960,7 +960,7 @@
 			<key>originalName</key>
 			<string>slack.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -970,7 +970,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -982,7 +982,7 @@
 			<key>originalName</key>
 			<string>CamtasiaUtl.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -992,7 +992,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1004,7 +1004,7 @@
 			<key>originalName</key>
 			<string>CamRecorder.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -1014,7 +1014,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1026,7 +1026,7 @@
 			<key>originalName</key>
 			<string>CamPlay.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -1036,7 +1036,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1048,7 +1048,7 @@
 			<key>originalName</key>
 			<string>Camtasia_Studio.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -1058,7 +1058,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1070,7 +1070,7 @@
 			<key>originalName</key>
 			<string>CamtasiaStudio.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -1080,7 +1080,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1092,7 +1092,7 @@
 			<key>originalName</key>
 			<string>Camtasia.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -1102,7 +1102,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1114,7 +1114,7 @@
 			<key>originalName</key>
 			<string>DiscordCanary.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -1124,7 +1124,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1136,7 +1136,7 @@
 			<key>originalName</key>
 			<string>DiscordPTB.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -1146,7 +1146,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1158,7 +1158,7 @@
 			<key>originalName</key>
 			<string>Discord.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -1168,7 +1168,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1180,7 +1180,7 @@
 			<key>originalName</key>
 			<string>RPCSuite.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -1190,7 +1190,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1202,7 +1202,7 @@
 			<key>originalName</key>
 			<string>RPCService.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -1212,7 +1212,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1224,7 +1224,7 @@
 			<key>originalName</key>
 			<string>RemotePCDesktop.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -1234,7 +1234,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1246,7 +1246,7 @@
 			<key>originalName</key>
 			<string>beamyourscreen-host.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -1256,7 +1256,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1268,7 +1268,7 @@
 			<key>originalName</key>
 			<string>AeroAdmin.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -1278,7 +1278,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1290,7 +1290,7 @@
 			<key>originalName</key>
 			<string>Mikogo-host.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -1300,7 +1300,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1312,7 +1312,7 @@
 			<key>originalName</key>
 			<string>chromoting.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -1322,7 +1322,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1334,7 +1334,7 @@
 			<key>originalName</key>
 			<string>vncserverui.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -1344,7 +1344,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1356,7 +1356,7 @@
 			<key>originalName</key>
 			<string>vncviewer.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -1366,7 +1366,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1378,7 +1378,7 @@
 			<key>originalName</key>
 			<string>vncserver.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -1388,7 +1388,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1400,7 +1400,7 @@
 			<key>originalName</key>
 			<string>TeamViewer.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -1410,7 +1410,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1422,7 +1422,7 @@
 			<key>originalName</key>
 			<string>GotoMeetingWinStore.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -1432,7 +1432,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1444,7 +1444,7 @@
 			<key>originalName</key>
 			<string>SkypeHost.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -1454,7 +1454,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1466,7 +1466,7 @@
 			<key>originalName</key>
 			<string>SkypeApp.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>
@@ -1476,7 +1476,7 @@
 		</dict>
 		<dict>
 			<key>active</key>
-			<false/>
+			<true/>
 			<key>currentUser</key>
 			<true/>
 			<key>description</key>
@@ -1488,7 +1488,7 @@
 			<key>originalName</key>
 			<string>Skype.exe</string>
 			<key>os</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>strongKill</key>
 			<false/>
 			<key>user</key>

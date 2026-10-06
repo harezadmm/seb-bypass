@@ -136,15 +136,15 @@ for _i in range(1, 13):
 
 # -------------------------------------------------------- Screenshot/Capture
 R("allowWindowCapture", "Screenshot & Capture", "Izinkan capture window",
-  "Kunci capture tingkat jendela (macOS).", True, {"eq": False}, risk="low", plat="mac")
+  "Kunci capture tingkat jendela (macOS).", True, {"eq": False, "absent": True}, risk="low", plat="mac")
 R("allowScreenCapture", "Screenshot & Capture", "Izinkan screen capture",
-  "Screenshot diizinkan.", True, {"eq": False}, risk="low", plat="mac")
+  "Screenshot diizinkan.", True, {"eq": False, "absent": True}, risk="low", plat="mac")
 R("allowScreenSharing", "Screenshot & Capture", "Izinkan screen sharing",
   "Bila False, SEB keluar sendiri saat mendeteksi screen sharing.",
   True, {"eq": False}, risk="low", plat="mac")
 R("screenSharingMacEnforceBlocked", "Screenshot & Capture",
   "Jangan paksa blokir screen sharing (macOS)",
-  "Kunci kedua (OR) untuk jalur screen sharing.", False, {"eq": True}, risk="low", plat="mac")
+  "Kunci kedua (OR) untuk jalur screen sharing.", False, {"eq": True, "absent": True}, risk="low", plat="mac")
 R("enablePrintScreen", "Screenshot & Capture", "Izinkan PrintScreen",
   "PrintScreen tidak diblokir.", True, {"eq": False}, risk="low")
 R("allowFlashFullscreen", "Screenshot & Capture", "Izinkan Flash fullscreen",
@@ -156,10 +156,15 @@ R("enablePrivateClipboard", "Clipboard", "Matikan clipboard privat",
   False, {"eq": True}, risk="low")
 R("enablePrivateClipboardMacEnforce", "Clipboard",
   "Matikan paksa clipboard privat (macOS)",
-  "Operand kedua (OR) - harus ikut False.", False, {"eq": True}, risk="low", plat="mac")
+  "Operand kedua (OR) di SEBAbstractWebView.m:98. Default @YES = memblokir. "
+  "Kalau kunci ini TIDAK ADA di config, SEB memakai default @YES sehingga "
+  "copy/paste tetap mati walau enablePrivateClipboard=False.",
+  False, {"eq": True, "absent": True}, risk="low", plat="mac")
 R("clipboardPolicy", "Clipboard", "Clipboard: Allow",
-  "0=Allow, 1=Block, 2=SEBOnly. Nilai 0 membebaskan clipboard.",
-  0, {"in": [1, 2]}, risk="low")
+  "0=Allow, 1=Block, 2=SEBOnly. Default SEB adalah SEBOnly (2) = memblokir. "
+  "Kalau kunci ini TIDAK ADA di config, SEB memakai SEBOnly, sehingga "
+  "copy/paste dari luar SEB tetap mati.",
+  0, {"in": [1, 2], "absent": True}, risk="low")
 
 # ------------------------------------------------------- Proses & Monitoring
 R("__DEACTIVATE_PROCESSES__", "Proses & Monitoring",
@@ -175,9 +180,9 @@ R("detectStoppedProcess", "Proses & Monitoring", "Matikan deteksi proses berhent
 R("detectAccessibilityApps", "Proses & Monitoring",
   "Jangan bunuh aplikasi ber-Izin Accessibility",
   "Membebaskan CleanShot X dan alat bantu lain (macOS).",
-  False, {"eq": True}, risk="low", plat="mac")
+  False, {"eq": True, "absent": True}, risk="low", plat="mac")
 R("autoQuitApplications", "Proses & Monitoring", "Jangan auto-quit aplikasi lain",
-  "SEB tidak menutup aplikasi lain saat mulai.", False, {"eq": True}, risk="low", plat="mac")
+  "SEB tidak menutup aplikasi lain saat mulai.", False, {"eq": True, "absent": True}, risk="low", plat="mac")
 
 # ----------------------------------------------------------------------- Layar
 R("allowedDisplaysMaxNumber", "Layar (Display)", "Izinkan banyak layar",
@@ -272,7 +277,7 @@ R("allowDictation", "Sensor & Privasi", "Izinkan dictation",
   True, {"eq": False}, risk="low", plat="mac")
 R("allowDictionaryLookup", "Sensor & Privasi", "Izinkan kamus / lookup",
   "SEB membunuh LookupViewService bila False (macOS).",
-  True, {"eq": False}, risk="low", plat="mac")
+  True, {"eq": False, "absent": True}, risk="low", plat="mac")
 R("allowAudioCapture", "Sensor & Privasi", "Izinkan audio capture",
   "Perekaman audio diizinkan.", True, {"eq": False}, risk="low")
 R("allowVideoCapture", "Sensor & Privasi", "Izinkan video capture",
@@ -312,9 +317,13 @@ PRESETS = {
                  "lockdownModePolicy", "enableAltEsc", "enableCtrlEsc", "enableAltF4"],
     },
     "capture": {
-        "nama": "Buka screenshot & clipboard",
-        "keys": ["allowWindowCapture", "allowScreenCapture", "enablePrintScreen",
-                 "enablePrivateClipboard", "enablePrivateClipboardMacEnforce", "clipboardPolicy"],
+        "nama": "Buka screenshot",
+        "keys": ["allowWindowCapture", "allowScreenCapture", "enablePrintScreen"],
+    },
+    "clipboard": {
+        "nama": "Buka copy-paste (clipboard)",
+        "keys": ["enablePrivateClipboard", "enablePrivateClipboardMacEnforce",
+                 "clipboardPolicy"],
     },
     "display": {
         "nama": "Layar ganda & display",

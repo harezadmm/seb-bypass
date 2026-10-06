@@ -61,6 +61,30 @@ curl -fsSL https://raw.githubusercontent.com/harezadmm/seb-bypass/main/install_m
 | `confignew.bypass.salt-preserved.seb` | varian konservatif | `True` — kalau server menolak |
 | `SebClientSettings.seb` | profil bypass umum | `False` |
 
+---
+
+## Copy-paste (clipboard) — sering kelewat
+
+Tiga kunci harus benar **bersamaan**. Dua di antaranya default-nya
+**MEMBLOKIR** kalau tidak ada di config:
+
+| Kunci | Default SEB | Nilai bypass |
+|---|---|---|
+| `enablePrivateClipboard` | `@YES` | `False` |
+| `enablePrivateClipboardMacEnforce` | `@YES` | `False` |
+| `clipboardPolicy` | SEBOnly (2) | `0` (Allow) |
+
+Kalau hanya `enablePrivateClipboard=False` sementara dua lainnya tidak ada,
+SEB memakai default-nya dan **clipboard tetap mati** — copy/paste dari luar
+SEB hilang.
+
+GUI mendeteksi kunci yang **ABSENT** sebagai terkunci (perbaikan v1.0.1),
+sehingga kasus ini ikut tertangani. Tersedia preset khusus **`clipboard`**.
+
+`enablePrivateClipboardMacEnforce` adalah operand kedua (OR) di
+`SEBAbstractWebView.m:98` — keduanya wajib `False`. `clipboardPolicy=0`
+menimpa default SEBOnly.
+
 Cukup buka file `.seb` langsung di SEB polos. Input asli tidak diubah.
 
 `browserURLSalt` memengaruhi perhitungan Browser Exam Key. Varian `False`
