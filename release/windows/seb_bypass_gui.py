@@ -139,9 +139,13 @@ R("allowWindowCapture", "Screenshot & Capture", "Izinkan capture window",
   "Kunci capture tingkat jendela (macOS).", True, {"eq": False, "absent": True}, risk="low", plat="mac")
 R("allowScreenCapture", "Screenshot & Capture", "Izinkan screen capture",
   "Screenshot diizinkan.", True, {"eq": False, "absent": True}, risk="low", plat="mac")
-R("allowScreenSharing", "Screenshot & Capture", "Izinkan screen sharing",
-  "Bila False, SEB keluar sendiri saat mendeteksi screen sharing.",
-  True, {"eq": False}, risk="low", plat="mac")
+R("allowScreenSharing", "Screenshot & Capture", "Matikan deteksi remote / screen sharing",
+  "Kunci ini = EnableRemoteConnections (Keys.cs:307). Bila False, SEB "
+  "mengaktifkan DisableRemoteConnections dan MEMBLOKIR start saat mendeteksi "
+  "sesi remote (RemoteSessionOperation.cs:50 -> detector.IsRemoteSession()). "
+  "Di macOS jalur yang sama membuat SEB mengunci diri saat Screen Sharing / "
+  "Remote Management aktif. Set True untuk mematikan deteksi ini.",
+  True, {"eq": False, "absent": True}, risk="low")
 R("screenSharingMacEnforceBlocked", "Screenshot & Capture",
   "Jangan paksa blokir screen sharing (macOS)",
   "Kunci kedua (OR) untuk jalur screen sharing.", False, {"eq": True, "absent": True}, risk="low", plat="mac")
@@ -177,6 +181,14 @@ R("monitorProcesses", "Proses & Monitoring", "Matikan monitoring proses",
   False, {"eq": True}, risk="medium", plat="win")
 R("detectStoppedProcess", "Proses & Monitoring", "Matikan deteksi proses berhenti",
   "SEB tidak mengunci saat proses dihentikan.", False, {"eq": True}, risk="medium", plat="win")
+R("__REMOTE_SESSION_DETECT__", "Proses & Monitoring",
+  "Matikan deteksi sesi remote (RDP / VNC / TeamViewer)",
+  "Pintasan untuk allowScreenSharing=True. Di Windows: "
+  "RemoteSessionOperation.cs:50 memblokir start bila DisableRemoteConnections "
+  "aktif dan IsRemoteSession() true (RDP/VNC/sesi remote). Di macOS: SEB "
+  "mengunci diri saat Screen Sharing / Remote Management terdeteksi. "
+  "Menyalakan ini mematikan seluruh jalur deteksi tersebut.",
+  None, {"special": "remote"}, risk="low", action="set_remote_off")
 R("detectAccessibilityApps", "Proses & Monitoring",
   "Jangan bunuh aplikasi ber-Izin Accessibility",
   "Membebaskan CleanShot X dan alat bantu lain (macOS).",
@@ -366,6 +378,10 @@ def load_config(path):
 
 def is_locked(cfg, rule):
     key, spec = rule["key"], rule["locked"]
+    if spec.get("special") == "remote":
+        # allowScreenSharing False/absent = deteksi remote AKTIF (memblokir)
+        v = cfg.get("allowScreenSharing")
+        return v is None or v is False
     if spec.get("special") == "procs":
         pp = cfg.get("prohibitedProcesses") or []
         act = [e for e in pp if isinstance(e, dict) and e.get("active")]
@@ -387,6 +403,9 @@ def is_locked(cfg, rule):
 
 
 def current_value(cfg, rule):
+    if rule["locked"].get("special") == "remote":
+        v = cfg.get("allowScreenSharing")
+        return "aktif" if (v is None or v is False) else "nonaktif"
     if rule["locked"].get("special") == "procs":
         pp = cfg.get("prohibitedProcesses") or []
         act = [e for e in pp if isinstance(e, dict) and e.get("active")]
@@ -409,7 +428,11 @@ def apply_rules(cfg, keys, log):
         if not rule:
             continue
         act = rule["action"]
-        if act == "deactivate_procs":
+        if act == "set_remote_off":
+            out["allowScreenSharing"] = True
+            out["screenSharingMacEnforceBlocked"] = False
+            applied.append((rule["label"], "allowScreenSharing=True"))
+        elif act == "deactivate_procs":
             pp = list(out.get("prohibitedProcesses") or [])
             n = 0
             for e in pp:
