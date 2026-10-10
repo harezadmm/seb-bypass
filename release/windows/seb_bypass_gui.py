@@ -314,6 +314,99 @@ R("URLFilterRules", "URL Filter", "Kosongkan aturan filter URL",
 
 BY_KEY = {r["key"]: r for r in RULES}
 
+# Sinonim untuk pencarian: pengguna mengetik istilah awam, bukan nama kunci.
+# Dipakai apply_filter() lewat _rule_haystack().
+SYNONYMS = {
+    "enablePrivateClipboard": ["copy", "paste", "copas", "clipboard", "salin", "tempel", "ctrl+c", "ctrl+v"],
+    "enablePrivateClipboardMacEnforce": ["copy", "paste", "copas", "clipboard", "salin", "tempel"],
+    "clipboardPolicy": ["copy", "paste", "copas", "clipboard", "salin", "tempel"],
+    "allowScreenSharing": ["remote", "rdp", "vnc", "teamviewer", "anydesk", "screen sharing", "share screen", "jarak jauh", "remot"],
+    "__REMOTE_SESSION_DETECT__": ["remote", "rdp", "vnc", "teamviewer", "anydesk", "sesi remote", "jarak jauh", "remot", "deteksi"],
+    "allowWindowCapture": ["screenshot", "ss", "capture", "tangkap layar", "print screen", "cleanshot"],
+    "allowScreenCapture": ["screenshot", "ss", "capture", "tangkap layar", "print screen", "cleanshot"],
+    "enablePrintScreen": ["screenshot", "printscreen", "print screen", "prtsc", "tangkap layar"],
+    "allowSwitchToApplications": ["alt tab", "alttab", "cmd tab", "ganti aplikasi", "switch app", "pindah aplikasi", "task switcher"],
+    "enableAltTab": ["alt tab", "alttab", "ganti aplikasi", "pindah aplikasi"],
+    "enableAppSwitcherCheck": ["alt tab", "app switcher", "ganti aplikasi"],
+    "allowVirtualMachine": ["vm", "virtualbox", "vmware", "parallels", "virtual machine", "mesin virtual"],
+    "lockdownModePolicy": ["aac", "assessment mode", "kiosk", "lockdown", "kiosk klasik"],
+    "allowedDisplayBuiltin": ["layar", "display", "monitor", "built-in", "layar laptop", "window tidak muncul"],
+    "allowedDisplaysMaxNumber": ["layar", "display", "monitor", "dual monitor", "layar kedua", "sidecar", "multi layar"],
+    "allowDisplayMirroring": ["layar", "display", "mirroring", "mirror", "cermin"],
+    "allowSiri": ["siri", "keluar sendiri", "exit sendiri"],
+    "allowDictation": ["dictation", "dikte", "suara", "keluar sendiri"],
+    "allowDictionaryLookup": ["kamus", "dictionary", "lookup", "terjemah"],
+    "detectAccessibilityApps": ["accessibility", "aksesibilitas", "cleanshot", "alat bantu", "bunuh aplikasi"],
+    "autoQuitApplications": ["auto quit", "tutup aplikasi", "quit aplikasi"],
+    "monitorProcesses": ["proses", "process", "monitor", "bunuh proses", "kill"],
+    "detectStoppedProcess": ["proses", "process", "deteksi", "berhenti", "stop"],
+    "__DEACTIVATE_PROCESSES__": ["proses", "process", "terlarang", "prohibited", "blacklist", "daftar hitam", "bunuh"],
+    "allowSiri": ["siri"],
+    "enableF1": ["f1", "function key", "tombol fungsi"],
+    "enableF12": ["f12", "devtools", "developer tools"],
+    "allowDeveloperConsole": ["console", "devtools", "developer", "inspeksi", "f12"],
+    "allowFind": ["find", "cari", "ctrl+f", "search"],
+    "allowBrowsingBackForward": ["back", "forward", "maju", "mundur", "navigasi"],
+    "browserWindowAllowAddressBar": ["address bar", "url bar", "alamat"],
+    "allowDownloads": ["download", "unduh"],
+    "allowUploads": ["upload", "unggah"],
+    "allowDownUploads": ["download", "upload", "unduh", "unggah"],
+    "allowPrint": ["print", "cetak"],
+    "allowPDFPlugIn": ["pdf", "plugin"],
+    "downloadPDFFiles": ["pdf", "unduh pdf"],
+    "allowPreferencesWindow": ["preferences", "pengaturan", "setting", "preferensi"],
+    "hashedQuitPassword": ["password", "sandi", "quit", "keluar", "kata sandi"],
+    "hashedAdminPassword": ["password", "sandi", "admin", "kata sandi"],
+    "quitURL": ["keluar", "quit", "exit", "url keluar"],
+    "allowQuit": ["keluar", "quit", "exit"],
+    "killExplorerShell": ["explorer", "taskbar", "desktop", "windows explorer"],
+    "showTaskBar": ["taskbar", "bar bawah", "menu bawah"],
+    "showTime": ["jam", "clock", "waktu"],
+    "showSideMenu": ["menu samping", "side menu"],
+    "enableStartMenu": ["start menu", "menu start"],
+    "enableWindowsUpdate": ["windows update", "update"],
+    "createNewDesktop": ["desktop", "layar baru", "kiosk"],
+    "allowScreenSharing": ["screen sharing", "remote", "vnc"],
+    "enableCursorVerification": ["cursor", "kursor", "pointer"],
+    "enableSessionVerification": ["sesi", "session", "verifikasi"],
+    "allowStickyKeys": ["sticky keys", "tombol lengket"],
+    "disableSessionChangeLockScreen": ["switch user", "ganti user", "lock", "kunci"],
+    "sebServiceIgnore": ["service", "layanan"],
+    "enableZoomPage": ["zoom", "perbesar"],
+    "enableZoomText": ["zoom", "perbesar", "teks"],
+    "blockPopUpWindows": ["popup", "pop up", "jendela baru"],
+    "newBrowserWindowByLinkPolicy": ["popup", "link", "tautan", "jendela baru"],
+    "enableJavaScript": ["javascript", "js", "script"],
+    "allowSpellCheck": ["spell", "ejaan", "typo"],
+    "allowAudioCapture": ["audio", "suara", "mikrofon", "mic"],
+    "allowVideoCapture": ["video", "kamera", "camera", "webcam"],
+    "allowWlan": ["wifi", "wlan", "jaringan", "network"],
+    "URLFilterEnable": ["url filter", "filter", "blokir situs", "situs"],
+    "enableURLFilter": ["url filter", "filter", "blokir situs"],
+    "enableURLContentFilter": ["content filter", "filter konten"],
+    "whitelistURLFilter": ["whitelist", "daftar putih"],
+    "blacklistURLFilter": ["blacklist", "daftar hitam", "blokir"],
+    "URLFilterRules": ["filter", "aturan", "rules"],
+    "browserURLSalt": ["salt", "bek", "browser exam key", "popup macet", "macet"],
+    "examSessionReconfigureAllow": ["reconfigure", "rekonfigurasi", "config baru"],
+    "allowFlashFullscreen": ["flash", "fullscreen"],
+    "allowDisplayMirroring": ["mirror", "cermin", "layar"],
+    "allowedDisplayBuiltinEnforce": ["built-in", "layar", "penegakan"],
+    "allowedDisplaysIgnoreFailure": ["display", "layar", "kegagalan", "ignore"],
+    "screenSharingMacEnforceBlocked": ["screen sharing", "remote", "blokir", "mac"],
+    "enableMiddleMouse": ["middle mouse", "klik tengah", "scroll click"],
+    "enableRightMouse": ["right click", "klik kanan", "context menu"],
+    "enableAltEsc": ["alt esc"],
+    "enableCtrlEsc": ["ctrl esc"],
+    "enableAltF4": ["alt f4", "tutup jendela"],
+    "enableAltMouseWheel": ["alt scroll", "alt mouse"],
+    "ignoreExitKeys": ["exit key", "tombol keluar"],
+    "allowCustomDownUploadLocation": ["lokasi", "folder", "download", "upload"],
+    "openDownloads": ["folder download", "buka download"],
+    "removeBrowserProfile": ["profile", "profil"],
+    "removeLocalStorage": ["local storage", "storage"],
+}
+
 PRESETS = {
     "recommended": {
         "nama": "Rekomendasi (bypass penuh, risiko rendah)",
@@ -610,6 +703,9 @@ def run_gui(preload=None):
             self.raw = None
             self.vars = {}
             self.findings = []
+            self._search_index = {}
+            self.cfg_ref = None
+            self.findings_keys = set()
 
             self.style = ttk.Style(self)
             try:
@@ -661,7 +757,7 @@ def run_gui(preload=None):
             self.lbl_sel.pack(side="right")
 
             prow = ttk.Frame(left)
-            prow.pack(fill="x", pady=(0, 6))
+            prow.pack(fill="x", pady=(0, 4))
             ttk.Label(prow, text="Preset:", style="Sub.TLabel").pack(side="left")
             self.preset_var = tk.StringVar(value="recommended")
             cb = ttk.Combobox(prow, textvariable=self.preset_var, state="readonly",
@@ -672,6 +768,30 @@ def run_gui(preload=None):
             cb.bind("<<ComboboxSelected>>", self.on_preset)
             ttk.Button(prow, text="Pilih semua", command=lambda: self.set_all(True)).pack(side="left", padx=2)
             ttk.Button(prow, text="Kosongkan", command=lambda: self.set_all(False)).pack(side="left")
+
+            # ---- kolom pencarian ----
+            srow = ttk.Frame(left)
+            srow.pack(fill="x", pady=(0, 6))
+            ttk.Label(srow, text="Cari:", style="Sub.TLabel").pack(side="left")
+            self.search_var = tk.StringVar()
+            self.ent_search = ttk.Entry(srow, textvariable=self.search_var)
+            self.ent_search.pack(side="left", fill="x", expand=True, padx=6)
+            self.search_var.trace_add("write", lambda *_: self.apply_filter())
+            ttk.Button(srow, text="✕", width=3,
+                       command=self.clear_search).pack(side="left")
+            # filter tambahan
+            frow2 = ttk.Frame(left)
+            frow2.pack(fill="x", pady=(0, 6))
+            self.only_locked = tk.BooleanVar(value=False)
+            ttk.Checkbutton(frow2, text="hanya yang terkunci",
+                            variable=self.only_locked,
+                            command=self.apply_filter).pack(side="left")
+            self.only_checked = tk.BooleanVar(value=False)
+            ttk.Checkbutton(frow2, text="hanya tercentang",
+                            variable=self.only_checked,
+                            command=self.apply_filter).pack(side="left", padx=8)
+            self.lbl_filter = ttk.Label(frow2, text="", style="Sub.TLabel")
+            self.lbl_filter.pack(side="right")
 
             wrap = ttk.Frame(left)
             wrap.pack(fill="both", expand=True)
@@ -708,6 +828,37 @@ def run_gui(preload=None):
             self.btn_apply.pack(side="left")
             self.lbl_status = ttk.Label(bot, text="", style="Sub.TLabel")
             self.lbl_status.pack(side="left", padx=12)
+
+            # pintasan papan tombol
+            self.bind("<Control-f>", lambda e: self._focus_search())
+            self.bind("<Control-F>", lambda e: self._focus_search())
+            self.bind("<Command-f>", lambda e: self._focus_search())   # macOS
+            self.bind("<Escape>", lambda e: self._esc())
+            self.ent_search.bind("<Return>", lambda e: self._check_first_visible())
+            self.ent_search.bind("<Escape>", lambda e: self.clear_search())
+
+        def _focus_search(self):
+            self.ent_search.focus_set()
+            self.ent_search.select_range(0, "end")
+            return "break"
+
+        def _esc(self):
+            if self.search_var.get():
+                self.clear_search()
+            return "break"
+
+        def _check_first_visible(self):
+            """Enter di kolom cari = centang opsi pertama yang cocok."""
+            query = self.search_var.get().strip().lower()
+            terms = [t for t in query.split() if t]
+            if not terms:
+                return "break"
+            for r in RULES:
+                if self._match(r, terms) and r["key"] in self.vars:
+                    self.vars[r["key"]].set(not self.vars[r["key"]].get())
+                    self.update_count()
+                    break
+            return "break"
 
         # ------------------------------------------------------------- helpers
         def log(self, msg):
@@ -755,43 +906,109 @@ def run_gui(preload=None):
             return True
 
         def build_options(self, cfg, findings):
+            self.cfg_ref = cfg
+            self.findings_keys = {r["key"] for r in findings}
+            self._rebuild_options()
+
+        def _rule_haystack(self, r):
+            """Teks yang dipakai untuk pencarian, termasuk sinonim."""
+            parts = [r["key"], r["label"], r["why"], r["cat"], r["plat"]]
+            parts += SYNONYMS.get(r["key"], [])
+            return " ".join(parts).lower()
+
+        def _match(self, r, terms):
+            """Semua term harus cocok (AND), di teks mana pun."""
+            hay = self._search_index.get(r["key"])
+            if hay is None:
+                hay = self._rule_haystack(r)
+                self._search_index[r["key"]] = hay
+            return all(t in hay for t in terms)
+
+        def _rebuild_options(self):
+            cfg = self.cfg_ref
+            locked_keys = self.findings_keys
             for w in self.inner.winfo_children():
                 w.destroy()
-            self.vars.clear()
-            locked_keys = {r["key"] for r in findings}
+
+            query = self.search_var.get().strip().lower()
+            terms = [t for t in query.split() if t]
+            only_lock = self.only_locked.get()
+            only_chk = self.only_checked.get()
+
+            shown = 0
+            total = 0
             for cat in CATEGORIES:
                 rules = [r for r in RULES if r["cat"] == cat]
                 if not rules:
                     continue
+                # saring
+                vis = []
+                for r in rules:
+                    total += 1
+                    if terms and not self._match(r, terms):
+                        continue
+                    if only_lock and r["key"] not in locked_keys:
+                        continue
+                    if only_chk and r["key"] in self.vars and not self.vars[r["key"]].get():
+                        continue
+                    vis.append(r)
+                if not vis:
+                    continue
+
                 hdr = ttk.Frame(self.inner)
                 hdr.pack(fill="x", pady=(8, 2))
-                nlock = sum(1 for r in rules if r["key"] in locked_keys)
-                ttk.Label(hdr, text="%s  (%d terkunci / %d)" % (cat, nlock, len(rules)),
+                nlock = sum(1 for r in vis if r["key"] in locked_keys)
+                ttk.Label(hdr, text="%s  (%d terkunci / %d)" % (cat, nlock, len(vis)),
                           style="Cat.TLabel").pack(side="left")
                 ttk.Button(hdr, text="pilih semua", width=12,
-                           command=lambda rs=rules: self._cat(rs, True)).pack(side="right", padx=2)
+                           command=lambda rs=vis: self._cat(rs, True)).pack(side="right", padx=2)
                 ttk.Button(hdr, text="kosongkan", width=10,
-                           command=lambda rs=rules: self._cat(rs, False)).pack(side="right")
+                           command=lambda rs=vis: self._cat(rs, False)).pack(side="right")
 
-                for r in rules:
+                for r in vis:
+                    shown += 1
                     locked = r["key"] in locked_keys
-                    var = tk.BooleanVar(value=locked and r["risk"] == "low")
-                    self.vars[r["key"]] = var
+                    if r["key"] not in self.vars:
+                        self.vars[r["key"]] = tk.BooleanVar(
+                            value=locked and r["risk"] == "low")
+                    var = self.vars[r["key"]]
                     row = ttk.Frame(self.inner)
                     row.pack(fill="x", padx=(6, 0))
                     mark = "  " if r["risk"] == "low" else ("* " if r["risk"] == "medium" else "! ")
                     cb = ttk.Checkbutton(row, variable=var,
                                          text="%s%s" % (mark, r["label"]),
-                                         command=self.update_count)
+                                         command=self._on_toggle)
                     cb.pack(side="left")
                     note = "-> %r" % (r["value"],) if r["action"] == "set" else "-> dikosongkan"
                     if r["action"] == "deactivate_procs":
                         note = "-> semua active=False"
+                    elif r["action"] == "set_remote_off":
+                        note = "-> allowScreenSharing=True"
                     col = "Lock.TLabel" if locked else "Ok.TLabel"
                     ttk.Label(row, text="%s   %s" % (current_value(cfg, r), note),
                               style=col).pack(side="left", padx=8)
                     ttk.Label(row, text=r["key"], style="Sub.TLabel").pack(side="right", padx=6)
+
+            self.lbl_filter.configure(
+                text=("%d/%d opsi" % (shown, total)) if (terms or only_lock or only_chk) else "")
             self.update_count()
+
+        def _on_toggle(self):
+            if self.only_checked.get():
+                self._rebuild_options()
+            else:
+                self.update_count()
+
+        def apply_filter(self):
+            if not getattr(self, "cfg_ref", None):
+                return
+            self._rebuild_options()
+
+        def clear_search(self):
+            self.search_var.set("")
+            self.only_locked.set(False)
+            self.only_checked.set(False)
+            self.apply_filter()
 
         def build_tree(self, cfg, findings):
             for i in self.tree.get_children():
@@ -885,11 +1102,17 @@ def run_gui(preload=None):
 
     app = App()
     preload = os.environ.get("SEB_GUI_OPEN") or preload
+    _pf = os.environ.get("SEB_GUI_PREFILL_SEARCH")
     if preload and os.path.isfile(preload):
         try:
             app.after(60, lambda: app.open_path(preload))
         except Exception:
             pass
+    if _pf:
+        def _apply_pf():
+            app.search_var.set(_pf)
+            app.apply_filter()
+        app.after(700, _apply_pf)
     if os.environ.get("SEB_GUI_SMOKE"):
         # mode uji: muat file, terapkan preset, simpan, lalu keluar
         src = os.environ["SEB_GUI_SMOKE"]
@@ -913,6 +1136,30 @@ def run_gui(preload=None):
         print("SMOKE: terkunci sebelum=%d sesudah=%d" % (len(app.findings), len(nf)))
         print("SMOKE: widget kategori=%d" % len(CATEGORIES))
         print("SMOKE: output=%s (%d byte)" % (out, os.path.getsize(out)))
+        # uji fitur pencarian
+        app.search_var.set("copy paste")
+        app.apply_filter()
+        app.update()
+        vis = [r["key"] for r in RULES
+               if r["key"] in app.vars and app._match(r, ["copy", "paste"])]
+        print("SMOKE: cari 'copy paste' -> %d rule cocok" % len(vis))
+        print("SMOKE:   %s" % ", ".join(vis))
+        app.search_var.set("remote")
+        app.apply_filter()
+        app.update()
+        vis2 = [r["key"] for r in RULES
+                if r["key"] in app.vars and app._match(r, ["remote"])]
+        print("SMOKE: cari 'remote' -> %d rule cocok" % len(vis2))
+        app.search_var.set("")
+        app.only_locked.set(True)
+        app.apply_filter()
+        app.update()
+        print("SMOKE: filter 'hanya terkunci' OK")
+        app.only_locked.set(False)
+        app.search_var.set("")
+        app.apply_filter()
+        app.update()
+        print("SMOKE: reset filter OK")
         print("SMOKE: input utuh=%s" %
               (hashlib.sha256(open(src, "rb").read()).hexdigest() == orig))
         app.destroy()

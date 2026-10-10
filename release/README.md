@@ -63,6 +63,32 @@ curl -fsSL https://raw.githubusercontent.com/harezadmm/seb-bypass/main/install_m
 
 ---
 
+## Pencarian opsi
+
+Di panel kiri ada kolom **Cari** dengan pencarian pintar (sinonim):
+
+| Yang kamu ketik | Yang ditemukan |
+|---|---|
+| `copy paste` | enablePrivateClipboard, MacEnforce, clipboardPolicy |
+| `remote` | allowScreenSharing, screenSharingMacEnforceBlocked, deteksi sesi remote |
+| `screenshot` | allowWindowCapture, allowScreenCapture, enablePrintScreen |
+| `alt tab` | allowSwitchToApplications, enableAppSwitcherCheck, enableAltTab |
+| `layar` | allowedDisplays*, allowDisplayMirroring, createNewDesktop |
+| `vm` | allowVirtualMachine |
+
+Pencarian mencocokkan **nama kunci, label, penjelasan, kategori, dan sinonim**
+(85 istilah awam: "copas", "tangkap layar", "ganti aplikasi", "jarak jauh",
+"daftar hitam", dll). Beberapa kata = AND (`copy paste` → harus cocok keduanya).
+
+Filter tambahan:
+- **hanya yang terkunci** — sembunyikan opsi yang sudah aman
+- **hanya tercentang** — lihat apa saja yang akan diterapkan
+
+Pintasan: `Ctrl+F`/`Cmd+F` fokus ke pencarian · `Esc` bersihkan ·
+`Enter` centang opsi pertama yang cocok.
+
+---
+
 ## Copy-paste (clipboard) — sering kelewat
 
 Tiga kunci harus benar **bersamaan**. Dua di antaranya default-nya

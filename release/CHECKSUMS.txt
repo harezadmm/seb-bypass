@@ -1,14 +1,14 @@
 # Checksums (SHA-256)
-# dibuat: 2026-10-10 19:32:03 WIB
+# dibuat: 2026-10-10 19:43:47 WIB
 
 ## windows/
-0d1b8828b5d8aa590ad1e91e73b34e665e28f5362d7f656c0f8d62e934492535  SEB-Config-Bypass-Studio.exe
-4945b4503a90b467cb7ebceffd59d2c572f6192f564b0069a1c8567c330ba1b1  seb_bypass_gui.py
+676977e229147e8e6f437fb31e6702a6fb9d95a5858adc33c06a6dc94235ccb6  SEB-Config-Bypass-Studio.exe
+b4b06d8fee0ffc77dd64706fb06e4cb7951519bb7fdac9216718d39e33223ac7  seb_bypass_gui.py
 
 ## macos/
-2b63da7f9c223c791922c3caae85b345e2c2f458e6296da08248e97cb087a871  SEB-Config-Bypass-Studio.app.zip
-cc23edb984380b9865cc8d90afbfc5e0c043876a5bc398e2fa393e033924c118  SEB-Config-Bypass-Studio.dmg
-4945b4503a90b467cb7ebceffd59d2c572f6192f564b0069a1c8567c330ba1b1  seb_bypass_gui.py
+ea46559ae130518589110fd68831629cfc3278d11171c58bb250951b0ea2a030  SEB-Config-Bypass-Studio.app.zip
+b658d172b1232f0b213b25df5d582c75599bf6f4e293baab282467a8eedc4d65  SEB-Config-Bypass-Studio.dmg
+b4b06d8fee0ffc77dd64706fb06e4cb7951519bb7fdac9216718d39e33223ac7  seb_bypass_gui.py
 
 ## config/
 f6c67a7dcbdaef637790b347366bb90ed1ea48c18621279cd65cb13b0fb56e5e  SebClientSettings.seb
